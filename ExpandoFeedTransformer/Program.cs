@@ -8,9 +8,11 @@ namespace ExpandoFeedTransformer
     {
         private static async Task Main(string[] args)
         {
-            Console.WriteLine("Hello, World!");
+            Console.WriteLine("Getting expando feed");
 
             var orders = await GetExpandoOrders(1);
+
+            Console.WriteLine("Getting prehome feed");
 
             var items = await GetPrehomeFeed();
 
@@ -63,6 +65,8 @@ namespace ExpandoFeedTransformer
                 </table>
                 </td>
                 </tr>";
+
+            Console.WriteLine("Creating orders");
 
             foreach (var order in orders.order)
             {
@@ -120,7 +124,10 @@ namespace ExpandoFeedTransformer
 
             mailMessage = mailMessage.Replace("[[DATA]]", message);
 
+            Console.WriteLine("Sending mail");
             sendEmail(mailMessage);
+            Console.WriteLine("Finished");
+            Console.Read();
         }
 
         static void sendEmail(string htmlString)
@@ -130,7 +137,7 @@ namespace ExpandoFeedTransformer
                 var message = new MailMessage();
                 var smtp = new SmtpClient();
                 message.From = new MailAddress("noreply@azetcool.com");
-                message.To.Add(new MailAddress("jakkappro@gmail.com"));
+                message.To.Add(new MailAddress("info@prehome.sk"));
                 message.Subject = "Expando - Amazon objednavky za den [Today-1]";
                 message.IsBodyHtml = true;
                 message.Body = htmlString;
