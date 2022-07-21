@@ -131,7 +131,7 @@ namespace ExpandoFeedTransformer
                 var smtp = new SmtpClient();
                 message.From = new MailAddress("noreply@azetcool.com");
                 message.To.Add(new MailAddress("jakkappro@gmail.com"));
-                message.Subject = "Objednavky";
+                message.Subject = "Expando - Amazon objednavky za den [Today-1]";
                 message.IsBodyHtml = true;
                 message.Body = htmlString;
                 smtp.Port = 587;
