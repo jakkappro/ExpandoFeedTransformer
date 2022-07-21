@@ -29,28 +29,6 @@ namespace ExpandoFeedTransformer
                           <tr>
                             <td>
                               <table cellpadding=""0"" cellspacing=""5"" align=""left"" border=""1"">
-                                <tr>
-                                  <td>OrderId</td>
-                                  <td>purchaseDate</td>
-                                  <td>latestShipDate</td>
-                                  <td>totalPrice</td>
-                                  <td>companyName</td>
-                                  <td>firstName</td>
-                                  <td>surname</td>
-                                  <td>address</td>
-                                  <td>city</td>
-                                  <td>zip</td>
-                                  <td>country</td>
-                                  <td>
-                                    <table cellpadding=""0"" cellspacing=""5"" align=""left"" border=""1"">
-                                      <tr>
-                                        <td>itemId</td>
-                                        <td>ean</td>
-                                        <td>link></td>
-                                      </tr>
-                                    </table>
-                                  </td>
-                                </tr>
                                 <table
                                   cellpadding=""0""
                                   cellspacing=""5""
@@ -64,7 +42,27 @@ namespace ExpandoFeedTransformer
                       </body>
                     </html>";
 
-            var message = "";
+            var message = @"<tr><td>OrderId</td>
+                <td>purchaseDate</td>
+                <td>latestShipDate</td>
+                <td>totalPrice</td>
+                <td>companyName</td>
+                <td>firstName</td>
+                <td>surname</td>
+                <td>address</td>
+                <td>city</td>
+                <td>zip</td>
+                <td>country</td>
+                <td>
+                <table cellpadding=""0"" cellspacing=""5"" align=""left"" border=""1"">
+                <tr>
+                <td>itemId</td>
+                <td>ean</td>
+                <td>link></td>
+                </tr>
+                </table>
+                </td>
+                </tr>";
 
             foreach (var order in orders.order)
             {
@@ -97,8 +95,8 @@ namespace ExpandoFeedTransformer
                 var data = "";
 
                 message = message.Replace("[[OrderId]]", order.orderId);
-                message = message.Replace("[[purchaseDate]]", order.purchaseDate);
-                message = message.Replace("[[latestShipDate]]", order.latestShipDate);
+                message = message.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
+                message = message.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
                 message = message.Replace("[[totalPrice]]", order.totalPrice.ToString(CultureInfo.InvariantCulture));
                 message = message.Replace("[[companyName]]", order.customer.companyName);
                 message = message.Replace("[[firstName]]", order.customer.firstname);
@@ -112,7 +110,7 @@ namespace ExpandoFeedTransformer
                 {
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
 
-                    data += $"<td>{item.itemId}</td><td>{i.EAN}</td><td>{i.URL}></td>";
+                    data += $"<td>{item.itemId}</td><td>{i.EAN}</td><td><a href={i.URL}>link</a></td>";
 
                     i = null;
                 }
