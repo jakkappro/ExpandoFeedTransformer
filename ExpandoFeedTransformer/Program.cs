@@ -6,8 +6,27 @@ namespace ExpandoFeedTransformer
 {
     internal class Program
     {
+        private static List<decimal> obtainedItemsList;
+
+        // TODO: set right path this one is temporary
+        private const string path = "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"";
+
+
         private static async Task Main(string[] args)
         {
+            obtainedItemsList = new List<decimal>();
+            Console.WriteLine("Starting pohoda mServer");
+            var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
+                "http://127.0.0.1:5336", "admin", "acecom", 1000, 3);
+
+            mServer.StartServer();
+
+            if (!await mServer.IsConnectionAvailable())
+            {
+                Console.WriteLine("Couldn't connect to mServer");
+                return;
+            }
+
             Console.WriteLine("Getting expando feed");
 
             var orders = await GetExpandoOrders(1);
@@ -70,11 +89,6 @@ namespace ExpandoFeedTransformer
 
             foreach (var order in orders.order)
             {
-                if (order.orderStatus == "Canceled")
-                {
-                    continue;
-                }
-
                 message += @"<tr>
                     <td>[[OrderId]]</td>
                     <td>[[purchaseDate]]</td>
@@ -98,6 +112,242 @@ namespace ExpandoFeedTransformer
 
                 var data = "";
 
+                using var client = new HttpClient();
+
+                var orderDetail = new List<PohodaCreateOrder.orderOrderItem>();
+
+                foreach (var item in order.items)
+                {
+                    var i = items.Find(e => e.ITEM_ID == item.itemId);
+
+                    //bug chyba item quantity
+                    data += $"<td>{item.itemId}</td><td>{i.EAN}</td><td><a href={i.URL}>link</a></td>";
+
+                    i = null;
+
+                    if (obtainedItemsList.Contains(item.itemId))
+                    {
+                        continue;
+                    }
+
+                    var request = new PohodaGetStockRequest.dataPack()
+                    {
+                        version = 2.0m,
+                        ico = 53870441,
+                        note = "Export",
+                        id = "zas001",
+                        application = "StwTest",
+                        dataPackItem = new PohodaGetStockRequest.dataPackDataPackItem()
+                        {
+                            id = "zas001",
+                            version = 2.0m,
+                            listStockRequest = new PohodaGetStockRequest.listStockRequest()
+                            {
+                                version = 2.0m,
+                                stockVersion = 2.0m,
+                                requestStock = new PohodaGetStockRequest.listStockRequestRequestStock()
+                                {
+                                    filter = new PohodaGetStockRequest.filter()
+                                    {
+                                        code = item.itemId.ToString()
+                                    }
+                                }
+                            }
+                        }
+                    };
+
+                    var response =
+                        PohodaGetStockResponse.Deserialize(
+                            await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
+
+                    if (response.responsePackItem is null)
+                    {
+                        var dataPack = new PohodaCreateStock.dataPack()
+                        {
+                            version = 2.0m,
+                            ico = 53870441,
+                            note = "Imported from xml",
+                            id = "zas001",
+                            application = "StwTest"
+                        };
+
+                        var pathToPicture = i.IMGURL.Split('/').Last();
+                        try
+                        {
+                            var fileBytes = await client.GetByteArrayAsync(new Uri(i.IMGURL));
+                            if (!File.Exists(path + pathToPicture))
+                            {
+                                await using var fs = File.Create(path + pathToPicture);
+                                await fs.WriteAsync(fileBytes);
+                                fs.Close();
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine($"Failed to download image for {i.PRODUCTNAME}");
+                        }
+
+                        var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
+                        {
+                            version = 2.0m,
+                            id = "ZAS001",
+                            stock = new PohodaCreateStock.stock()
+                            {
+                                version = 2.0m,
+                                stockHeader = new PohodaCreateStock.stockStockHeader
+                                {
+                                    stockType = "card",
+                                    code = i.ITEM_ID,
+                                    EAN = i.EAN,
+                                    PLU = 0,
+                                    isSales = false,
+                                    isInternet = true,
+                                    isBatch = true,
+                                    purchasingRateVAT = "high",
+                                    sellingRateVAT = "high",
+                                    name = i.PRODUCTNAME,
+                                    nameComplement = "ISO 9001",
+                                    unit = "ks",
+                                    storage = new PohodaCreateStock.stockStockHeaderStorage()
+                                    {
+                                        ids = "Amazon"
+                                    },
+                                    typePrice = new PohodaCreateStock.stockStockHeaderTypePrice()
+                                    {
+                                        ids = "SK"
+                                    },
+                                    purchasingPrice = 0,
+                                    sellingPrice = i.PRICE * 1.2m,
+                                    limitMin = 0,
+                                    limitMax = 1000,
+                                    mass = i.WEIGHT,
+                                    supplier = new PohodaCreateStock.stockStockHeaderSupplier()
+                                    {
+                                        id = 1
+                                    },
+                                    producer = i.MANUFACTURER,
+                                    description = i.DESCRIPTION,
+                                    pictures = new PohodaCreateStock.stockStockHeaderPictures()
+                                    {
+                                        picture = new PohodaCreateStock.stockStockHeaderPicturesPicture()
+                                        {
+                                            @default = true,
+                                            description = "obrazok produktu",
+                                            filepath = pathToPicture
+                                        }
+                                    },
+                                    note = "Importovane z xml",
+                                    relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks()
+                                    {
+                                        relatedLink = new PohodaCreateStock.stockStockHeaderRelatedLinksRelatedLink
+                                        {
+                                            addressURL = i.URL,
+                                            description = "odkaz na produkt",
+                                            order = 1
+                                        }
+                                    },
+                                }
+                            }
+                        };
+                    }
+                    else
+                    {
+                        obtainedItemsList.Add(item.itemId);
+                    }
+
+                    var orderItem = new PohodaCreateOrder.orderOrderItem()
+                    {
+                        text = "nevim",
+                        quantity = item.itemQuantity,
+                        delivered = 0,
+                        rateVAT = "high",
+                        homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
+                        {
+                            unitPrice = 0 //not sure what here :(
+                        }
+                    };
+
+                    var orderItem2 = new PohodaCreateOrder.orderOrderItem()
+                    {
+                        quantity = 1,
+                        delivered = 0,
+                        rateVAT = "high",
+                        stockItem = new PohodaCreateOrder.orderOrderItemStockItem()
+                        {
+                            stockItem = new PohodaCreateOrder.stockItem()
+                            {
+                                EAN = "123"
+                            }
+                        }
+                    };
+
+                    orderDetail.Add(orderItem);
+                    orderDetail.Add(orderItem2);
+                }
+
+                if (order.orderStatus == "Canceled")
+                {
+                    // update order to canceled
+                    continue;
+                }
+
+                // create order somehow :D
+
+                var orderDataPack = new PohodaCreateOrder.dataPack()
+                {
+                    version = 2.0m,
+                    ico = 53870441,
+                    note = "Export",
+                    id = "zas001",
+                    application = "StwTest",
+                    dataPackItem = new PohodaCreateOrder.dataPackDataPackItem()
+                    {
+                        id = "zas001",
+                        version = 2.0m,
+                        order = new PohodaCreateOrder.order()
+                        {
+                            version = 2.0m,
+                            orderHeader = new PohodaCreateOrder.orderOrderHeader()
+                            {
+                                orderType = "receivedOrder",
+                                numberOrder = "12345m",
+                                date = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
+                                dateFrom = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
+                                dateTo = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
+                                text = ":D",
+                                partnerIdentity = new PohodaCreateOrder.orderOrderHeaderPartnerIdentity()
+                                {
+                                    address = new PohodaCreateOrder.address()
+                                    {
+                                        name = order.customer.firstname + " " + order.customer.surname,
+                                        city = order.customer.address.city,
+                                        street = order.customer.address.address1,
+                                        zip = order.customer.address.zip,
+                                        country = new PohodaCreateOrder.addressCountry()
+                                        {
+                                            ids = order.customer.address.country    
+                                        }
+                                    }
+                                },
+                                paymentType = new PohodaCreateOrder.orderOrderHeaderPaymentType()
+                                {
+                                    ids = "daco"
+                                },
+                                priceLevel = new PohodaCreateOrder.orderOrderHeaderPriceLevel()
+                                {
+                                    ids = "normal"
+                                }
+                            },
+                            // not good solution what about more items at once can i even do it TODO: figure it out :D
+                            orderDetail = orderDetail.ToArray(),
+                            orderSummary = new PohodaCreateOrder.orderOrderSummary()
+                            {
+                                roundingDocument = "math2one"
+                            }
+                        }
+                    }
+                };
+
                 message = message.Replace("[[OrderId]]", order.orderId);
                 message = message.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
                 message = message.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
@@ -110,14 +360,6 @@ namespace ExpandoFeedTransformer
                 message = message.Replace("[[zip]]", order.customer.address.zip);
                 message = message.Replace("[[country]]", order.customer.address.country);
 
-                foreach (var item in order.items)
-                {
-                    var i = items.Find(e => e.ITEM_ID == item.itemId);
-
-                    data += $"<td>{item.itemId}</td><td>{i.EAN}</td><td><a href={i.URL}>link</a></td>";
-
-                    i = null;
-                }
 
                 message = message.Replace("[[items]]", data);
             }
@@ -130,6 +372,7 @@ namespace ExpandoFeedTransformer
             Console.Read();
         }
 
+
         static void sendEmail(string htmlString)
         {
             try
@@ -137,7 +380,8 @@ namespace ExpandoFeedTransformer
                 var message = new MailMessage();
                 var smtp = new SmtpClient();
                 message.From = new MailAddress("noreply@azetcool.com");
-                message.To.Add(new MailAddress("info@prehome.sk"));
+                message.To.Add(new MailAddress("jakkappro@gmail.com"));
+                message.CC.Add(new MailAddress("pojtek@gmail.com"));
                 message.Subject = "Expando - Amazon objednavky za den [Today-1]";
                 message.IsBodyHtml = true;
                 message.Body = htmlString;

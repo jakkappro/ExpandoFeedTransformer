@@ -20,16 +20,16 @@ namespace ExpandoFeedTransformer
             return writer.ToString();
         }
 
-        [SerializableAttribute()]
+        [Serializable()]
         [DesignerCategory("code")]
-        [XmlTypeAttribute(AnonymousType = true)]
-        [XmlRootAttribute(Namespace = "", IsNullable = false)]
+        [XmlType(AnonymousType = true)]
+        [XmlRoot(Namespace = "", IsNullable = false)]
         public partial class SHOP
         {
 
             private SHOPSHOPITEM[] sHOPITEMField;
 
-            [XmlElementAttribute("SHOPITEM")]
+            [XmlElement("SHOPITEM")]
             public SHOPSHOPITEM[] SHOPITEM
             {
                 get => this.sHOPITEMField;
@@ -37,9 +37,9 @@ namespace ExpandoFeedTransformer
             }
         }
 
-        [SerializableAttribute()]
-        [DesignerCategoryAttribute("code")]
-        [XmlTypeAttribute(AnonymousType = true)]
+        [Serializable()]
+        [DesignerCategory("code")]
+        [XmlType(AnonymousType = true)]
         public partial class SHOPSHOPITEM
         {
 
@@ -188,9 +188,9 @@ namespace ExpandoFeedTransformer
             }
         }
 
-        [SerializableAttribute()]
-        [DesignerCategoryAttribute("code")]
-        [XmlTypeAttribute(AnonymousType = true)]
+        [Serializable()]
+        [DesignerCategory("code")]
+        [XmlType(AnonymousType = true)]
         public partial class SHOPSHOPITEMDELIVERY
         {
 
