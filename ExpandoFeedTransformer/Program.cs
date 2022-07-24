@@ -7,7 +7,6 @@ namespace ExpandoFeedTransformer
 {
     internal class Program
     {
-        // TODO: set right path this one is temporary
         private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
 
         private static async Task Main(string[] args)
@@ -125,7 +124,6 @@ namespace ExpandoFeedTransformer
                 {
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
 
-                    //bug chyba item quantity
                     shopItems.Add(i);
                     var request = new PohodaGetStockRequest.dataPack()
                     {
