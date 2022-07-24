@@ -341,6 +341,8 @@ namespace ExpandoFeedTransformer
                     }
                 };
 
+                await Task.Delay(1500);
+                
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
 
                 message = message.Replace("[[OrderId]]", order.orderId);
