@@ -3,9 +3,9 @@ using System.Net;
 using System.Text;
 using System.Xml;
 
-namespace ExpandoFeedTransformer;
-
-public class PohodaMServer
+namespace ExpandoFeedTransformer
+{
+    public class PohodaMServer
 {
          #region Variables
         private readonly string serverName;
@@ -128,7 +128,8 @@ public class PohodaMServer
 
         private string CreateAuthHeader()
         {
-            return "Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{username}:{password}"));
+            return "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}"));
         }
         #endregion
+}
 }

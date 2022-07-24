@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Net;
 using System.Net.Mail;
+using ExpandoFeedTransformer.Services;
 
 namespace ExpandoFeedTransformer
 {
@@ -23,6 +24,7 @@ namespace ExpandoFeedTransformer
                 return;
             }
 
+
             Console.WriteLine("Getting expando feed");
 
             var orders = await GetExpandoOrders(1);
@@ -31,7 +33,7 @@ namespace ExpandoFeedTransformer
 
             var items = await GetPrehomeFeed();
 
-            var mailMessage =
+            const string mailMessage =
                 @"<!DOCTYPE html>
                     <html lang=""en"">
                       <head>
@@ -51,7 +53,30 @@ namespace ExpandoFeedTransformer
                                   cellspacing=""5""
                                   align=""left""
                                   border=""1""
-                                >[[DATA]]</table>
+                                >
+                                <tr><td>OrderId</td>
+                                <td>purchaseDate</td>
+                                <td>latestShipDate</td>
+                                <td>totalPrice</td>
+                                <td>companyName</td>
+                                <td>firstName</td>
+                                <td>surname</td>
+                                <td>address</td>
+                                <td>city</td>
+                                <td>zip</td>
+                                <td>country</td>
+                                <td>
+                                <table cellpadding=""0"" cellspacing=""5"" align=""left"" border=""1"">
+                                <tr>
+                                <td>itemId</td>
+                                <td>ean</td>
+                                <td>link></td>
+                                </tr>
+                                </table>
+                                </td>
+                                </tr>
+                                <tr>
+                                [[data]]</table>
                               </table>
                             </td>
                           </tr>
@@ -59,66 +84,54 @@ namespace ExpandoFeedTransformer
                       </body>
                     </html>";
 
-            var message = @"<tr><td>OrderId</td>
-                <td>purchaseDate</td>
-                <td>latestShipDate</td>
-                <td>totalPrice</td>
-                <td>companyName</td>
-                <td>firstName</td>
-                <td>surname</td>
-                <td>address</td>
-                <td>city</td>
-                <td>zip</td>
-                <td>country</td>
+            const string row = @"
+                <td>[[OrderId]]</td>
+                <td>[[purchaseDate]]</td>
+                <td>[[latestShipDate]]</td>
+                <td>[[totalPrice]]</td>
+                <td>[[companyName]]</td>
+                <td>[[firstName]]</td>
+                <td>[[surname]]</td>
+                <td>[[address]]</td>
+                <td>[[city]]</td>
+                <td>[[zip]]</td>
+                <td>[[country]]</td>
                 <td>
                 <table cellpadding=""0"" cellspacing=""5"" align=""left"" border=""1"">
                 <tr>
-                <td>itemId</td>
-                <td>ean</td>
-                <td>link></td>
+                [[items]]
                 </tr>
                 </table>
-                </td>
+                </td> 
                 </tr>";
 
+            const string itemTemplate = @"<td>{item.itemId}</td>
+                                <td>{i.EAN}</td>
+                                <td><a href=""{i.URL}"">link</a></td>";
+
+            var mail = new MailService("noreply@azetcool.com", "jakkappro@gmail.com", "pojtek@gmail.com",
+                "W6&2bB9;T?ukTk4");
+
+            mail.CreateTemplate(mailMessage);
+            mail.CreateRowTemplate(row);
+            mail.CreateItemTemplate(itemTemplate);
+            
             Console.WriteLine("Creating orders");
 
             foreach (var order in orders.order)
             {
-                message += @"<tr>
-                    <td>[[OrderId]]</td>
-                    <td>[[purchaseDate]]</td>
-                    <td>[[latestShipDate]]</td>
-                    <td>[[totalPrice]]</td>
-                    <td>[[companyName]]</td>
-                    <td>[[firstName]]</td>
-                    <td>[[surname]]</td>
-                    <td>[[address]]</td>
-                    <td>[[city]]</td>
-                    <td>[[zip]]</td>
-                    <td>[[country]]</td>
-                    <td>
-                    <table cellpadding=""0"" cellspacing=""5"" align=""left"" border=""1"">
-                    <tr>
-                    [[items]]
-                    </tr>
-                    </table>
-                    </td> 
-                    </tr>";
-
-                var data = "";
-
                 using var client = new HttpClient();
 
                 var orderDetail = new List<PohodaCreateOrder.orderOrderItem>();
+
+                var shopItems = new List<PrehomeFeed.SHOPSHOPITEM>();
 
                 foreach (var item in order.items)
                 {
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
 
                     //bug chyba item quantity
-                    data += $"<td>{item.itemId}</td><td>{i.EAN}</td><td><a href={i.URL}>link</a></td>";
-
+                    shopItems.Add(i);
                     var request = new PohodaGetStockRequest.dataPack()
                     {
                         version = 2.0m,
@@ -175,7 +188,8 @@ namespace ExpandoFeedTransformer
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine($"Failed to download image for {i.PRODUCTNAME}, path {path + pathToPicture}, message {e.Message}");
+                            Console.WriteLine(
+                                $"Failed to download image for {i.PRODUCTNAME}, path {path + pathToPicture}, message {e.Message}");
                         }
 
                         Console.WriteLine("Creating request");
@@ -318,7 +332,7 @@ namespace ExpandoFeedTransformer
                                         zip = order.customer.address.zip,
                                         country = new PohodaCreateOrder.addressCountry()
                                         {
-                                            ids = order.customer.address.country    
+                                            ids = order.customer.address.country
                                         }
                                     }
                                 },
@@ -342,57 +356,18 @@ namespace ExpandoFeedTransformer
                 };
 
                 await Task.Delay(1500);
-                
+
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
 
-                message = message.Replace("[[OrderId]]", order.orderId);
-                message = message.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
-                message = message.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
-                message = message.Replace("[[totalPrice]]", order.totalPrice.ToString(CultureInfo.InvariantCulture));
-                message = message.Replace("[[companyName]]", order.customer.companyName);
-                message = message.Replace("[[firstName]]", order.customer.firstname);
-                message = message.Replace("[[surname]]", order.customer.surname);
-                message = message.Replace("[[address]]", order.customer.address.address1);
-                message = message.Replace("[[city]]", order.customer.address.city);
-                message = message.Replace("[[zip]]", order.customer.address.zip);
-                message = message.Replace("[[country]]", order.customer.address.country);
 
-                message = message.Replace("[[items]]", data);
+                mail.AddRow(order, shopItems);
             }
-
-            mailMessage = mailMessage.Replace("[[DATA]]", message);
-
+            
             Console.WriteLine("Sending mail");
-            SendEmail(mailMessage);
+            mail.PopulateTemplate();
+            mail.SendMail();
             Console.WriteLine("Finished");
             Console.Read();
-        }
-
-
-        private static void SendEmail(string htmlString)
-        {
-            try
-            {
-                var message = new MailMessage();
-                var smtp = new SmtpClient();
-                message.From = new MailAddress("noreply@azetcool.com");
-                message.To.Add(new MailAddress("jakkappro@gmail.com"));
-                message.CC.Add(new MailAddress("pojtek@gmail.com"));
-                message.Subject = "Expando - Amazon objednavky za den [Today-1]";
-                message.IsBodyHtml = true;
-                message.Body = htmlString;
-                smtp.Port = 587;
-                smtp.Host = "mail.hostmaster.sk";
-                smtp.EnableSsl = true;
-                smtp.UseDefaultCredentials = false;
-                smtp.Credentials = new NetworkCredential("noreply@azetcool.com", "W6&2bB9;T?ukTk4");
-                smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtp.Send(message);
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Error while sending mail :(");
-            }
         }
 
         private static async Task<List<PrehomeFeed.SHOPSHOPITEM>> GetPrehomeFeed()
