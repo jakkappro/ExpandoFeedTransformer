@@ -7,7 +7,7 @@ namespace ExpandoFeedTransformer
     internal class Program
     {
         // TODO: set right path this one is temporary
-        private const string path = "\"\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
+        private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
 
         private static async Task Main(string[] args)
         {
@@ -168,7 +168,7 @@ namespace ExpandoFeedTransformer
                             var fileBytes = await client.GetByteArrayAsync(new Uri(i.IMGURL));
                             if (!File.Exists(path + pathToPicture))
                             {
-                                await using var fs = File.Create(path + pathToPicture + "\"");
+                                await using var fs = File.Create(path + pathToPicture);
                                 await fs.WriteAsync(fileBytes);
                                 fs.Close();
                             }
