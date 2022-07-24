@@ -7,7 +7,7 @@ namespace ExpandoFeedTransformer
     internal class Program
     {
         // TODO: set right path this one is temporary
-        private const string path = "\"\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\"";
+        private const string path = "\"\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\\"";
 
         private static async Task Main(string[] args)
         {
@@ -175,7 +175,7 @@ namespace ExpandoFeedTransformer
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine($"Failed to download image for {i.PRODUCTNAME}");
+                            Console.WriteLine($"Failed to download image for {i.PRODUCTNAME}, path {path + pathToPicture}, message {e.Message}");
                         }
 
                         Console.WriteLine("Creating request");
