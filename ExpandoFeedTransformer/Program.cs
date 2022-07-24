@@ -6,14 +6,11 @@ namespace ExpandoFeedTransformer
 {
     internal class Program
     {
-        private static List<decimal> obtainedItemsList;
-
         // TODO: set right path this one is temporary
-        private const string path = "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"";
+        private const string path = "\"\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\"";
 
         private static async Task Main(string[] args)
         {
-            obtainedItemsList = new List<decimal>();
             Console.WriteLine("Starting pohoda mServer");
             var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
                 "http://127.0.0.1:5336", "admin", "acecom", 1000, 3);
@@ -124,11 +121,6 @@ namespace ExpandoFeedTransformer
 
                     i = null;
 
-                    if (obtainedItemsList.Contains(item.itemId))
-                    {
-                        continue;
-                    }
-
                     var request = new PohodaGetStockRequest.dataPack()
                     {
                         version = 2.0m,
@@ -167,7 +159,7 @@ namespace ExpandoFeedTransformer
                             ico = 53870441,
                             note = "Imported from xml",
                             id = "zas001",
-                            application = "StwTest"
+                            application = "StwTest",
                         };
 
                         var pathToPicture = i.IMGURL.Split('/').Last();
@@ -248,10 +240,13 @@ namespace ExpandoFeedTransformer
                                 }
                             }
                         };
-                    }
-                    else
-                    {
-                        obtainedItemsList.Add(item.itemId);
+
+                        dataPack.dataPackItem = new[]
+                        {
+                            dataPackItem
+                        };
+
+                        await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
                     }
 
                     var orderItem = new PohodaCreateOrder.orderOrderItem()
