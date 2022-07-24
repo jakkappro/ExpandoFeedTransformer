@@ -252,7 +252,7 @@ namespace ExpandoFeedTransformer
 
                     var orderItem = new PohodaCreateOrder.orderOrderItem()
                     {
-                        text = "nevim",
+                        text = "Amazon objednavka",
                         quantity = item.itemQuantity,
                         delivered = 0,
                         rateVAT = "high",
