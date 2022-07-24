@@ -223,11 +223,11 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/stock.xsd", IsNullable = false)]
         public class stockHeader
         {
-            private ushort idField;
+            private decimal idField;
 
             private string stockTypeField;
 
-            private ushort codeField;
+            private decimal codeField;
 
             private ulong eANField;
 
@@ -297,7 +297,7 @@ namespace ExpandoFeedTransformer
 
             private object parametersField;
 
-            public ushort id
+            public decimal id
             {
                 get => idField;
                 set => idField = value;
@@ -309,7 +309,7 @@ namespace ExpandoFeedTransformer
                 set => stockTypeField = value;
             }
 
-            public ushort code
+            public decimal code
             {
                 get => codeField;
                 set => codeField = value;
@@ -525,12 +525,12 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/stock.xsd")]
         public class stockHeaderStorage
         {
-            private byte idField;
+            private decimal idField;
 
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public byte id
+            public decimal id
             {
                 get => idField;
                 set => idField = value;
@@ -549,12 +549,12 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/stock.xsd")]
         public class stockHeaderTypePrice
         {
-            private byte idField;
+            private decimal idField;
 
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public byte id
+            public decimal id
             {
                 get => idField;
                 set => idField = value;
@@ -597,10 +597,10 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/stock.xsd")]
         public class stockHeaderSupplier
         {
-            private byte idField;
+            private decimal idField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public byte id
+            public decimal id
             {
                 get => idField;
                 set => idField = value;
@@ -632,7 +632,7 @@ namespace ExpandoFeedTransformer
 
             private string descriptionField;
 
-            private byte orderField;
+            private decimal orderField;
 
             private bool defaultField;
 
@@ -654,7 +654,7 @@ namespace ExpandoFeedTransformer
                 set => descriptionField = value;
             }
 
-            public byte order
+            public decimal order
             {
                 get => orderField;
                 set => orderField = value;
@@ -673,14 +673,14 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/stock.xsd")]
         public class stockPriceItemStockPrice
         {
-            private byte idField;
+            private decimal idField;
 
             private string idsField;
 
             private decimal priceField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public byte id
+            public decimal id
             {
                 get => idField;
                 set => idField = value;
