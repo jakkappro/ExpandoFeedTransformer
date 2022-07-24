@@ -119,8 +119,6 @@ namespace ExpandoFeedTransformer
                     //bug chyba item quantity
                     data += $"<td>{item.itemId}</td><td>{i.EAN}</td><td><a href={i.URL}>link</a></td>";
 
-                    i = null;
-
                     var request = new PohodaGetStockRequest.dataPack()
                     {
                         version = 2.0m,
