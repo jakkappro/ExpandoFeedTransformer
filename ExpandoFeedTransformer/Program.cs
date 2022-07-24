@@ -11,7 +11,6 @@ namespace ExpandoFeedTransformer
         // TODO: set right path this one is temporary
         private const string path = "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"";
 
-
         private static async Task Main(string[] args)
         {
             obtainedItemsList = new List<decimal>();
@@ -263,7 +262,7 @@ namespace ExpandoFeedTransformer
                         rateVAT = "high",
                         homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
                         {
-                            unitPrice = 0 //not sure what here :(
+                            unitPrice = item.itemPrice
                         }
                     };
 
@@ -276,7 +275,7 @@ namespace ExpandoFeedTransformer
                         {
                             stockItem = new PohodaCreateOrder.stockItem()
                             {
-                                EAN = "123"
+                                EAN = i.EAN
                             }
                         }
                     };
@@ -290,8 +289,6 @@ namespace ExpandoFeedTransformer
                     // update order to canceled
                     continue;
                 }
-
-                // create order somehow :D
 
                 var orderDataPack = new PohodaCreateOrder.dataPack()
                 {
@@ -310,11 +307,11 @@ namespace ExpandoFeedTransformer
                             orderHeader = new PohodaCreateOrder.orderOrderHeader()
                             {
                                 orderType = "receivedOrder",
-                                numberOrder = "12345m",
+                                numberOrder = order.orderId,
                                 date = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
                                 dateFrom = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
                                 dateTo = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
-                                text = ":D",
+                                text = $"Amazon objednavka c. {order.orderId}",
                                 partnerIdentity = new PohodaCreateOrder.orderOrderHeaderPartnerIdentity()
                                 {
                                     address = new PohodaCreateOrder.address()
@@ -331,7 +328,7 @@ namespace ExpandoFeedTransformer
                                 },
                                 paymentType = new PohodaCreateOrder.orderOrderHeaderPaymentType()
                                 {
-                                    ids = "daco"
+                                    ids = "Plat.kartou"
                                 },
                                 priceLevel = new PohodaCreateOrder.orderOrderHeaderPriceLevel()
                                 {
@@ -348,6 +345,8 @@ namespace ExpandoFeedTransformer
                     }
                 };
 
+                await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
+
                 message = message.Replace("[[OrderId]]", order.orderId);
                 message = message.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
                 message = message.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
@@ -360,20 +359,19 @@ namespace ExpandoFeedTransformer
                 message = message.Replace("[[zip]]", order.customer.address.zip);
                 message = message.Replace("[[country]]", order.customer.address.country);
 
-
                 message = message.Replace("[[items]]", data);
             }
 
             mailMessage = mailMessage.Replace("[[DATA]]", message);
 
             Console.WriteLine("Sending mail");
-            sendEmail(mailMessage);
+            SendEmail(mailMessage);
             Console.WriteLine("Finished");
             Console.Read();
         }
 
 
-        static void sendEmail(string htmlString)
+        private static void SendEmail(string htmlString)
         {
             try
             {

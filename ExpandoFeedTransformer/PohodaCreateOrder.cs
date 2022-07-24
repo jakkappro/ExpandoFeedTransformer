@@ -397,10 +397,10 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderItemHomeCurrency
         {
-            private byte unitPriceField;
+            private decimal unitPriceField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public byte unitPrice
+            public decimal unitPrice
             {
                 get => unitPriceField;
                 set => unitPriceField = value;
