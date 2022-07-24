@@ -62,9 +62,9 @@ namespace ExpandoFeedTransformer.Services
             foreach (var item in items)
             {
                 var temp = _itemTemplate;
-                temp = temp.Replace("", item.ITEM_ID.ToString());
-                temp = temp.Replace("", item.EAN);
-                temp = temp.Replace("", item.URL);
+                temp = temp.Replace("[[ID]]", item.ITEM_ID.ToString());
+                temp = temp.Replace("[[EAN]]", item.EAN);
+                temp = temp.Replace("[[URL]]", item.URL);
                 data += temp;
             }
 

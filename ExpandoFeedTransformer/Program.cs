@@ -105,9 +105,9 @@ namespace ExpandoFeedTransformer
                 </td> 
                 </tr>";
 
-            const string itemTemplate = @"<td>{item.itemId}</td>
-                                <td>{i.EAN}</td>
-                                <td><a href=""{i.URL}"">link</a></td>";
+            const string itemTemplate = @"<td>[[ID]]</td>
+                                <td>[[EAN]]</td>
+                                <td><a href=""[[URL]]"">link</a></td>";
 
             var mail = new MailService("noreply@azetcool.com", "jakkappro@gmail.com", "pojtek@gmail.com",
                 "W6&2bB9;T?ukTk4");
