@@ -119,7 +119,7 @@ namespace ExpandoFeedTransformer
         public class listStockRequest
         {
 
-            private listStockRequestRequestStock requestStockField;
+            private listStockRequestRequestStock? requestStockField;
 
             private decimal versionField;
 

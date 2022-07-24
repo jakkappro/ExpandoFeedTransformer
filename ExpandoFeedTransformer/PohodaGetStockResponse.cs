@@ -34,7 +34,7 @@ namespace ExpandoFeedTransformer
 
             private string noteField;
 
-            public responsePackResponsePackItem? responsePackItem
+            public responsePackResponsePackItem responsePackItem
             {
                 get => responsePackItemField;
                 set => responsePackItemField = value;
@@ -148,7 +148,7 @@ namespace ExpandoFeedTransformer
 
             private string stateField;
 
-            public listStockStock stock
+            public listStockStock? stock
             {
                 get => stockField;
                 set => stockField = value;

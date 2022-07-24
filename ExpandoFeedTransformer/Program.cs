@@ -151,8 +151,9 @@ namespace ExpandoFeedTransformer
                         PohodaGetStockResponse.Deserialize(
                             await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
 
-                    if (response.responsePackItem is null)
+                    if (response.responsePackItem.listStock.stock is null)
                     {
+                        Console.WriteLine("Couldn't find stock, creating new one");
                         var dataPack = new PohodaCreateStock.dataPack()
                         {
                             version = 2.0m,
@@ -163,6 +164,7 @@ namespace ExpandoFeedTransformer
                         };
 
                         var pathToPicture = i.IMGURL.Split('/').Last();
+                        Console.WriteLine($"Downloading picture{pathToPicture}");
                         try
                         {
                             var fileBytes = await client.GetByteArrayAsync(new Uri(i.IMGURL));
@@ -178,6 +180,7 @@ namespace ExpandoFeedTransformer
                             Console.WriteLine($"Failed to download image for {i.PRODUCTNAME}");
                         }
 
+                        Console.WriteLine("Creating request");
                         var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
                         {
                             version = 2.0m,
@@ -245,7 +248,7 @@ namespace ExpandoFeedTransformer
                         {
                             dataPackItem
                         };
-
+                        Console.WriteLine("Sending request");
                         await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
                     }
 
