@@ -44,7 +44,7 @@ namespace ExpandoFeedTransformer.Services
 
         public void AddRow(ExpandoFeed.ordersOrder order, List<PrehomeFeed.SHOPSHOPITEM> items)
         {
-            _rows = _rowTemplate;
+            _rows += _rowTemplate;
             _rows = _rows.Replace("[[OrderId]]", order.orderId);
             _rows = _rows.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
             _rows = _rows.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
