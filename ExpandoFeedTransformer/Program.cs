@@ -256,7 +256,7 @@ namespace ExpandoFeedTransformer
                             orderDetail = orderDetail.ToArray(),
                             orderSummary = new PohodaCreateOrder.orderOrderSummary()
                             {
-                                roundingDocument = "math2one"
+                                roundingDocument = "math2half"
                             }
                         }
                     }
