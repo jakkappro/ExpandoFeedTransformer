@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-using System.Net;
-using System.Net.Mail;
+﻿using System.Net;
 using ExpandoFeedTransformer.Factories.Pohoda;
 using ExpandoFeedTransformer.Services;
 
@@ -9,10 +7,12 @@ namespace ExpandoFeedTransformer
     internal class Program
     {
         private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
-        private static uint num = 1;
+        private static uint num = 3;
 
         private static async Task Main(string[] args)
         {
+            var v = uint.Parse($"3{DateTime.Now:yyMMdd}");
+            num = v;
             Console.WriteLine("Starting pohoda mServer");
             var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
                 "http://127.0.0.1:5336", "admin", "acecom", 1000, 3);
@@ -238,7 +238,10 @@ namespace ExpandoFeedTransformer
                                         ? "DE"
                                         : "Predajná"
                                 },
-                                number = num,
+                                number = new PohodaCreateOrder.orderOrderHeaderNumber()
+                                {
+                                    numberRequested = num
+                                },
                                 carrier = new PohodaCreateOrder.orderOrderHeaderCarrier()
                                 {
                                     ids = order.customer.address.country == "DE"
