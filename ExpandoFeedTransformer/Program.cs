@@ -11,7 +11,7 @@ namespace ExpandoFeedTransformer
 
         private static async Task Main(string[] args)
         {
-            var v = uint.Parse($"3{DateTime.Now:yyMMdd}");
+            var v = uint.Parse($"3{DateTime.Now:yyMMdd}000");
             num = v;
             Console.WriteLine("Starting pohoda mServer");
             var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
