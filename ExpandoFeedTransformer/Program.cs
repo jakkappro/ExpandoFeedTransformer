@@ -154,7 +154,8 @@ namespace ExpandoFeedTransformer
                         rateVAT = "high",
                         homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
                         {
-                            unitPrice = 5
+                            unitPrice = 5,
+                            unitPriceSpecified = true
                         }
                     };
 
@@ -173,7 +174,8 @@ namespace ExpandoFeedTransformer
                         },
                         homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
                         {
-                            unitPrice = item.itemPrice * 1.2m
+                            unitPrice = item.itemPrice * 1.2m,
+                            unitPriceSpecified = true
                         }
                     };
 
