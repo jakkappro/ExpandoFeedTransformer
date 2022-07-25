@@ -9,6 +9,7 @@ namespace ExpandoFeedTransformer
     internal class Program
     {
         private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
+        private static uint num = 1;
 
         private static async Task Main(string[] args)
         {
@@ -200,7 +201,7 @@ namespace ExpandoFeedTransformer
                         order = new PohodaCreateOrder.order()
                         {
                             version = 2.0m,
-                            orderHeader = new PohodaCreateOrder.orderOrderHeader()
+                            orderHeader = new PohodaCreateOrder.orderOrderHeader
                             {
                                 orderType = "receivedOrder",
                                 numberOrder = order.orderId,
@@ -233,8 +234,18 @@ namespace ExpandoFeedTransformer
                                 },
                                 priceLevel = new PohodaCreateOrder.orderOrderHeaderPriceLevel()
                                 {
-                                    ids = order.customer.address.country == "DE" ? "DE" : "Predajná"
-                                }
+                                    ids = order.customer.address.country == "DE"
+                                        ? "DE"
+                                        : "Predajná"
+                                },
+                                number = num,
+                                carrier = new PohodaCreateOrder.orderOrderHeaderCarrier()
+                                {
+                                    ids = order.customer.address.country == "DE"
+                                        ? "Doprava DE"
+                                        : "Doprava AT"
+                                },
+
                             },
                             // not good solution what about more items at once can i even do it TODO: figure it out :D
                             orderDetail = orderDetail.ToArray(),
@@ -245,6 +256,8 @@ namespace ExpandoFeedTransformer
                         }
                     }
                 };
+
+                num += 1;
 
                 await Task.Delay(1500);
 
