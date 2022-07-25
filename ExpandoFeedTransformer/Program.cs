@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text;
 using ExpandoFeedTransformer.Factories.Pohoda;
 using ExpandoFeedTransformer.Services;
 
@@ -11,7 +12,19 @@ namespace ExpandoFeedTransformer
 
         private static async Task Main(string[] args)
         {
-            var v = uint.Parse($"3{DateTime.Now:yyMMdd}000");
+            var line = "000";
+            try
+            {
+                var sr = new StreamReader("index.txt");
+                line = await sr.ReadLineAsync();
+                sr.Close();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
+
+            var v = uint.Parse($"3{DateTime.Now:yyMMdd}{line}");
             num = v;
             Console.WriteLine("Starting pohoda mServer");
             var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
@@ -256,7 +269,7 @@ namespace ExpandoFeedTransformer
                             orderDetail = orderDetail.ToArray(),
                             orderSummary = new PohodaCreateOrder.orderOrderSummary()
                             {
-                                roundingDocument = "math2half"
+                                roundingDocument = "math2half" // Toto treba zmenit na ine zaokruhlovanie
                             }
                         }
                     }
@@ -268,7 +281,6 @@ namespace ExpandoFeedTransformer
 
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
 
-
                 mail.AddRow(order, shopItems);
             }
 
@@ -278,6 +290,19 @@ namespace ExpandoFeedTransformer
             Console.WriteLine("Finished");
             Console.Read();
             // mServer.StopServer();
+
+            try
+            {
+                var s = num.ToString();
+                var write = s.Length >= 3 ? s : s.Length == 2 ? "0" + s : "00" + s;
+                var sw = new StreamWriter("index.txt", false, Encoding.ASCII);
+                await sw.WriteAsync(write);
+                sw.Close();
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Exception: " + e.Message);
+            }
         }
 
         private static async Task<List<PrehomeFeed.SHOPSHOPITEM>> GetPrehomeFeed()

@@ -12,4 +12,10 @@
     <Folder Include="Factories\Prehome\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="index.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
