@@ -10,7 +10,6 @@
   <ItemGroup>
     <Folder Include="Factories\Expando\" />
     <Folder Include="Factories\Prehome\" />
-    <Folder Include="Factories\Pohoda\" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using System.Net;
 using System.Net.Mail;
+using ExpandoFeedTransformer.Factories.Pohoda;
 using ExpandoFeedTransformer.Services;
 
 namespace ExpandoFeedTransformer
@@ -31,6 +32,8 @@ namespace ExpandoFeedTransformer
             Console.WriteLine("Getting prehome feed");
 
             var items = await GetPrehomeFeed();
+
+            #region Templates
 
             const string mailMessage =
                 @"<!DOCTYPE html>
@@ -103,13 +106,15 @@ namespace ExpandoFeedTransformer
                                 <td>[[EAN]]</td>
                                 <td><a href=""[[URL]]"">link</a></td>";
 
+            #endregion
+
             var mail = new MailService("noreply@azetcool.com", "jakkappro@gmail.com", "pojtek@gmail.com",
                 "W6&2bB9;T?ukTk4");
 
             mail.CreateTemplate(mailMessage);
             mail.CreateRowTemplate(row);
             mail.CreateItemTemplate(itemTemplate);
-            
+
             Console.WriteLine("Creating orders");
 
             foreach (var order in orders.order)
@@ -125,31 +130,7 @@ namespace ExpandoFeedTransformer
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
 
                     shopItems.Add(i);
-                    var request = new PohodaGetStockRequest.dataPack()
-                    {
-                        version = 2.0m,
-                        ico = 53870441,
-                        note = "Export",
-                        id = "zas001",
-                        application = "StwTest",
-                        dataPackItem = new PohodaGetStockRequest.dataPackDataPackItem()
-                        {
-                            id = "zas001",
-                            version = 2.0m,
-                            listStockRequest = new PohodaGetStockRequest.listStockRequest()
-                            {
-                                version = 2.0m,
-                                stockVersion = 2.0m,
-                                requestStock = new PohodaGetStockRequest.listStockRequestRequestStock()
-                                {
-                                    filter = new PohodaGetStockRequest.filter()
-                                    {
-                                        code = item.itemId.ToString()
-                                    }
-                                }
-                            }
-                        }
-                    };
+                    var request = PohodaGetStockRequestFactory.CreateRequest(item);
 
                     var response =
                         PohodaGetStockResponse.Deserialize(
@@ -158,120 +139,28 @@ namespace ExpandoFeedTransformer
                     if (response.responsePackItem.listStock.stock is null)
                     {
                         Console.WriteLine("Couldn't find stock, creating new one");
-                        var dataPack = new PohodaCreateStock.dataPack()
-                        {
-                            version = 2.0m,
-                            ico = 53870441,
-                            note = "Imported from xml",
-                            id = "zas001",
-                            application = "StwTest",
-                        };
-
-                        var pathToPicture = i.IMGURL.Split('/').Last();
-                        Console.WriteLine($"Downloading picture{pathToPicture}");
-                        try
-                        {
-                            var fileBytes = await client.GetByteArrayAsync(new Uri(i.IMGURL));
-                            if (!File.Exists(path + pathToPicture))
-                            {
-                                await using var fs = File.Create(path + pathToPicture);
-                                await fs.WriteAsync(fileBytes);
-                                fs.Close();
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(
-                                $"Failed to download image for {i.PRODUCTNAME}, path {path + pathToPicture}, message {e.Message}");
-                        }
-
-                        Console.WriteLine("Creating request");
-                        var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
-                        {
-                            version = 2.0m,
-                            id = "ZAS001",
-                            stock = new PohodaCreateStock.stock()
-                            {
-                                version = 2.0m,
-                                stockHeader = new PohodaCreateStock.stockStockHeader
-                                {
-                                    stockType = "card",
-                                    code = i.ITEM_ID,
-                                    EAN = i.EAN,
-                                    PLU = 0,
-                                    isSales = false,
-                                    isInternet = true,
-                                    isBatch = true,
-                                    purchasingRateVAT = "high",
-                                    sellingRateVAT = "high",
-                                    name = i.PRODUCTNAME,
-                                    nameComplement = "ISO 9001",
-                                    unit = "ks",
-                                    storage = new PohodaCreateStock.stockStockHeaderStorage()
-                                    {
-                                        ids = "Amazon"
-                                    },
-                                    typePrice = new PohodaCreateStock.stockStockHeaderTypePrice()
-                                    {
-                                        ids = "SK"
-                                    },
-                                    purchasingPrice = 0,
-                                    sellingPrice = i.PRICE * 1.2m,
-                                    limitMin = 0,
-                                    limitMax = 1000,
-                                    mass = i.WEIGHT,
-                                    supplier = new PohodaCreateStock.stockStockHeaderSupplier()
-                                    {
-                                        id = 1
-                                    },
-                                    producer = i.MANUFACTURER,
-                                    description = i.DESCRIPTION,
-                                    pictures = new PohodaCreateStock.stockStockHeaderPictures()
-                                    {
-                                        picture = new PohodaCreateStock.stockStockHeaderPicturesPicture()
-                                        {
-                                            @default = true,
-                                            description = "obrazok produktu",
-                                            filepath = pathToPicture
-                                        }
-                                    },
-                                    note = "Importovane z xml",
-                                    relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks()
-                                    {
-                                        relatedLink = new PohodaCreateStock.stockStockHeaderRelatedLinksRelatedLink
-                                        {
-                                            addressURL = i.URL,
-                                            description = "odkaz na produkt",
-                                            order = 1
-                                        }
-                                    },
-                                }
-                            }
-                        };
-
-                        dataPack.dataPackItem = new[]
-                        {
-                            dataPackItem
-                        };
+                        var dataPack = await PohodaCreateStockFactory.CreateRequest(i, path, client);
                         Console.WriteLine("Sending request");
                         await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
                     }
 
+                    // shipping
                     var orderItem = new PohodaCreateOrder.orderOrderItem()
                     {
-                        text = "Amazon objednavka",
-                        quantity = item.itemQuantity,
+                        text = "Doprava",
+                        quantity = 1,
                         delivered = 0,
                         rateVAT = "high",
                         homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
                         {
-                            unitPrice = item.itemPrice
+                            unitPrice = 5
                         }
                     };
 
+                    // order item
                     var orderItem2 = new PohodaCreateOrder.orderOrderItem()
                     {
-                        quantity = 1,
+                        quantity = item.itemQuantity,
                         delivered = 0,
                         rateVAT = "high",
                         stockItem = new PohodaCreateOrder.orderOrderItemStockItem()
@@ -280,6 +169,10 @@ namespace ExpandoFeedTransformer
                             {
                                 EAN = i.EAN
                             }
+                        },
+                        homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
+                        {
+                            unitPrice = item.itemPrice * 1.2m
                         }
                     };
 
@@ -355,12 +248,13 @@ namespace ExpandoFeedTransformer
 
                 mail.AddRow(order, shopItems);
             }
-            
+
             Console.WriteLine("Sending mail");
             mail.PopulateTemplate();
             mail.SendMail();
             Console.WriteLine("Finished");
             Console.Read();
+            // mServer.StopServer();
         }
 
         private static async Task<List<PrehomeFeed.SHOPSHOPITEM>> GetPrehomeFeed()
