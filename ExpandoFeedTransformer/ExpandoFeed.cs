@@ -323,7 +323,7 @@ namespace ExpandoFeedTransformer
             private ordersOrderCustomerAddress addressField;
 
    
-            public string companyName
+            public string? companyName
             {
                 get => companyNameField;
                 set => companyNameField = value;

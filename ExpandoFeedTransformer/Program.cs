@@ -219,7 +219,12 @@ namespace ExpandoFeedTransformer
                                         country = new PohodaCreateOrder.addressCountry()
                                         {
                                             ids = order.customer.address.country
-                                        }
+                                        },
+                                        company = order.customer.companyName ?? "",
+                                        dic = "",
+                                        division = "",
+                                        email = order.customer.email,
+                                        phone = order.customer.phone
                                     }
                                 },
                                 paymentType = new PohodaCreateOrder.orderOrderHeaderPaymentType()
@@ -228,7 +233,7 @@ namespace ExpandoFeedTransformer
                                 },
                                 priceLevel = new PohodaCreateOrder.orderOrderHeaderPriceLevel()
                                 {
-                                    ids = "normal"
+                                    ids = order.customer.address.country == "DE" ? "DE" : "Predajná"
                                 }
                             },
                             // not good solution what about more items at once can i even do it TODO: figure it out :D

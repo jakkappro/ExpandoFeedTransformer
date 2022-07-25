@@ -67,10 +67,10 @@ namespace ExpandoFeedTransformer
             public static string Serialize(dataPack data)
             {
                 var x = new XmlSerializer(data.GetType());
-                
+
                 TextWriter writer = new Utf8StringWriter();
                 x.Serialize(writer, data);
-                var s =  writer.ToString() ?? throw new InvalidOperationException();
+                var s = writer.ToString() ?? throw new InvalidOperationException();
                 writer.Flush();
                 writer.Close();
                 return s;
@@ -174,6 +174,10 @@ namespace ExpandoFeedTransformer
 
             private orderOrderHeaderPriceLevel priceLevelField;
 
+            private ulong numberField;
+
+            private orderOrderHeaderCarrier carrierField;
+
             public string orderType
             {
                 get => orderTypeField;
@@ -230,6 +234,18 @@ namespace ExpandoFeedTransformer
                 get => priceLevelField;
                 set => priceLevelField = value;
             }
+
+            public ulong number
+            {
+                get => numberField;
+                set => numberField = value;
+            }
+
+            public orderOrderHeaderCarrier carrier
+            {
+                get => carrierField;
+                set => carrierField = value;
+            }
         }
 
         [Serializable]
@@ -253,6 +269,10 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
         public class address
         {
+            private string companyField;
+
+            private string divisionField;
+
             private string nameField;
 
             private string cityField;
@@ -261,7 +281,27 @@ namespace ExpandoFeedTransformer
 
             private string zipField;
 
+            private uint icoField;
+
+            private string dicField;
+
+            private string phoneField;
+
+            private string emailField;
+
             private addressCountry countryField;
+
+            public string company
+            {
+                get => companyField;
+                set => companyField = value;
+            }
+
+            public string division
+            {
+                get => divisionField;
+                set => divisionField = value;
+            }
 
             public string name
             {
@@ -285,6 +325,30 @@ namespace ExpandoFeedTransformer
             {
                 get => zipField;
                 set => zipField = value;
+            }
+
+            public uint ico
+            {
+                get => icoField;
+                set => icoField = value;
+            }
+
+            public string dic
+            {
+                get => dicField;
+                set => dicField = value;
+            }
+
+            public string phone
+            {
+                get => phoneField;
+                set => phoneField = value;
+            }
+
+            public string email
+            {
+                get => emailField;
+                set => emailField = value;
             }
 
             public addressCountry country
@@ -327,6 +391,21 @@ namespace ExpandoFeedTransformer
         [DesignerCategory("code")]
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderPriceLevel
+        {
+            private string idsField;
+
+            [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+            public string ids
+            {
+                get => idsField;
+                set => idsField = value;
+            }
+        }
+
+        [Serializable]
+        [DesignerCategory("code")]
+        [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+        public class orderOrderHeaderCarrier
         {
             private string idsField;
 
@@ -399,11 +478,38 @@ namespace ExpandoFeedTransformer
         {
             private decimal unitPriceField;
 
+            private bool unitPriceFieldSpecified;
+
+            private string priceVATField;
+
+            private object priceField;
+
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
             public decimal unitPrice
             {
                 get => unitPriceField;
                 set => unitPriceField = value;
+            }
+
+            [XmlIgnore]
+            public bool unitPriceSpecified
+            {
+                get => unitPriceFieldSpecified;
+                set => unitPriceFieldSpecified = value;
+            }
+
+            [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+            public string priceVAT
+            {
+                get => priceVATField;
+                set => priceVATField = value;
+            }
+
+            [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+            public object price
+            {
+                get => priceField;
+                set => priceField = value;
             }
         }
 
@@ -428,12 +534,12 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
         public class stockItem
         {
-            private string eANField;
+            private string idsField;
 
             public string EAN
             {
-                get => eANField;
-                set => eANField = value;
+                get => idsField;
+                set => idsField = value;
             }
         }
 
