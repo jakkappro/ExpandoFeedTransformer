@@ -174,7 +174,7 @@ namespace ExpandoFeedTransformer
                         },
                         homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
                         {
-                            unitPrice = item.itemPrice * 1.2m,
+                            unitPrice = i.PRICE * 1.2m,
                             unitPriceSpecified = true
                         }
                     };
