@@ -20,11 +20,11 @@ namespace ExpandoFeedTransformer
             return writer.ToString();
         }
 
-        [Serializable()]
+        [Serializable]
         [DesignerCategory("code")]
         [XmlType(AnonymousType = true)]
         [XmlRoot(Namespace = "", IsNullable = false)]
-        public partial class SHOP
+        public class SHOP
         {
 
             private SHOPSHOPITEM[] sHOPITEMField;
@@ -32,15 +32,15 @@ namespace ExpandoFeedTransformer
             [XmlElement("SHOPITEM")]
             public SHOPSHOPITEM[] SHOPITEM
             {
-                get => this.sHOPITEMField;
-                set => this.sHOPITEMField = value;
+                get => sHOPITEMField;
+                set => sHOPITEMField = value;
             }
         }
 
-        [Serializable()]
+        [Serializable]
         [DesignerCategory("code")]
         [XmlType(AnonymousType = true)]
-        public partial class SHOPSHOPITEM
+        public class SHOPSHOPITEM
         {
 
             private uint iTEM_IDField;
@@ -81,117 +81,117 @@ namespace ExpandoFeedTransformer
 
             public uint ITEM_ID
             {
-                get => this.iTEM_IDField;
-                set => this.iTEM_IDField = value;
+                get => iTEM_IDField;
+                set => iTEM_IDField = value;
             }
 
             public string PRODUCTNAME
             {
-                get => this.pRODUCTNAMEField;
-                set => this.pRODUCTNAMEField = value;
+                get => pRODUCTNAMEField;
+                set => pRODUCTNAMEField = value;
             }
 
             public string PRODUCT
             {
-                get => this.pRODUCTField;
-                set => this.pRODUCTField = value;
+                get => pRODUCTField;
+                set => pRODUCTField = value;
             }
 
             public string DESCRIPTION
             {
-                get => this.dESCRIPTIONField;
-                set => this.dESCRIPTIONField = value;
+                get => dESCRIPTIONField;
+                set => dESCRIPTIONField = value;
             }
 
             public string URL
             {
-                get => this.uRLField;
-                set => this.uRLField = value;
+                get => uRLField;
+                set => uRLField = value;
             }
 
             public string IMGURL
             {
-                get => this.iMGURLField;
-                set => this.iMGURLField = value;
+                get => iMGURLField;
+                set => iMGURLField = value;
             }
 
             public decimal PRICE
             {
-                get => this.pRICEField;
-                set => this.pRICEField = value;
+                get => pRICEField;
+                set => pRICEField = value;
             }
 
             public decimal PRICE_VAT
             {
-                get => this.pRICE_VATField;
-                set => this.pRICE_VATField = value;
+                get => pRICE_VATField;
+                set => pRICE_VATField = value;
             }
 
             public byte VAT
             {
-                get => this.vATField;
-                set => this.vATField = value;
+                get => vATField;
+                set => vATField = value;
             }
 
             public string MANUFACTURER
             {
-                get => this.mANUFACTURERField;
-                set => this.mANUFACTURERField = value;
+                get => mANUFACTURERField;
+                set => mANUFACTURERField = value;
             }
 
             public string CATEGORYTEXT
             {
-                get => this.cATEGORYTEXTField;
-                set => this.cATEGORYTEXTField = value;
+                get => cATEGORYTEXTField;
+                set => cATEGORYTEXTField = value;
             }
 
             public string EAN
             {
-                get => this.eANField;
-                set => this.eANField = value;
+                get => eANField;
+                set => eANField = value;
             }
 
             public uint PRODUCTNO
             {
-                get => this.pRODUCTNOField;
-                set => this.pRODUCTNOField = value;
+                get => pRODUCTNOField;
+                set => pRODUCTNOField = value;
             }
 
             public byte DELIVERY_DATE
             {
-                get => this.dELIVERY_DATEField;
-                set => this.dELIVERY_DATEField = value;
+                get => dELIVERY_DATEField;
+                set => dELIVERY_DATEField = value;
             }
 
             public SHOPSHOPITEMDELIVERY DELIVERY
             {
-                get => this.dELIVERYField;
-                set => this.dELIVERYField = value;
+                get => dELIVERYField;
+                set => dELIVERYField = value;
             }
 
             public decimal WEIGHT
             {
-                get => this.wEIGHTField;
-                set => this.wEIGHTField = value;
+                get => wEIGHTField;
+                set => wEIGHTField = value;
             }
 
             public string WEIGHT_UNITS
             {
-                get => this.wEIGHT_UNITSField;
-                set => this.wEIGHT_UNITSField = value;
+                get => wEIGHT_UNITSField;
+                set => wEIGHT_UNITSField = value;
             }
 
             public byte STOCK
             {
-                get => this.sTOCKField;
-                set => this.sTOCKField = value;
+                get => sTOCKField;
+                set => sTOCKField = value;
             }
         }
 
-        [Serializable()]
+        [Serializable]
         [DesignerCategory("code")]
         [XmlType(AnonymousType = true)]
-        public partial class SHOPSHOPITEMDELIVERY
+        public class SHOPSHOPITEMDELIVERY
         {
 
             private string dELIVERY_IDField;
@@ -202,20 +202,20 @@ namespace ExpandoFeedTransformer
 
             public string DELIVERY_ID
             {
-                get => this.dELIVERY_IDField;
-                set => this.dELIVERY_IDField = value;
+                get => dELIVERY_IDField;
+                set => dELIVERY_IDField = value;
             }
 
             public decimal DELIVERY_PRICE
             {
-                get => this.dELIVERY_PRICEField;
-                set => this.dELIVERY_PRICEField = value;
+                get => dELIVERY_PRICEField;
+                set => dELIVERY_PRICEField = value;
             }
 
             public decimal DELIVERY_PRICE_COD
             {
-                get => this.dELIVERY_PRICE_CODField;
-                set => this.dELIVERY_PRICE_CODField = value;
+                get => dELIVERY_PRICE_CODField;
+                set => dELIVERY_PRICE_CODField = value;
             }
         }
 

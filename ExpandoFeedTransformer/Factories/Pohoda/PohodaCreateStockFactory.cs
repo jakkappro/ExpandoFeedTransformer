@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExpandoFeedTransformer.Factories.Pohoda
+﻿namespace ExpandoFeedTransformer.Factories.Pohoda
 {
     public class PohodaCreateStockFactory
     {
         public static async Task<PohodaCreateStock.dataPack> CreateRequest(PrehomeFeed.SHOPSHOPITEM i, string path, HttpClient client)
         {
-            var dataPack = new PohodaCreateStock.dataPack()
+            var dataPack = new PohodaCreateStock.dataPack
             {
                 version = 2.0m,
                 ico = 53870441,
@@ -38,11 +32,11 @@ namespace ExpandoFeedTransformer.Factories.Pohoda
             }
 
             Console.WriteLine("Creating request");
-            var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
+            var dataPackItem = new PohodaCreateStock.dataPackDataPackItem
             {
                 version = 2.0m,
                 id = "ZAS001",
-                stock = new PohodaCreateStock.stock()
+                stock = new PohodaCreateStock.stock
                 {
                     version = 2.0m,
                     stockHeader = new PohodaCreateStock.stockStockHeader
@@ -58,11 +52,11 @@ namespace ExpandoFeedTransformer.Factories.Pohoda
                         sellingRateVAT = "high",
                         name = i.PRODUCTNAME,
                         unit = "ks",
-                        storage = new PohodaCreateStock.stockStockHeaderStorage()
+                        storage = new PohodaCreateStock.stockStockHeaderStorage
                         {
                             ids = "Amazon"
                         },
-                        typePrice = new PohodaCreateStock.stockStockHeaderTypePrice()
+                        typePrice = new PohodaCreateStock.stockStockHeaderTypePrice
                         {
                             ids = "SK"
                         },
@@ -71,15 +65,15 @@ namespace ExpandoFeedTransformer.Factories.Pohoda
                         limitMin = 0,
                         limitMax = 1000,
                         mass = i.WEIGHT,
-                        supplier = new PohodaCreateStock.stockStockHeaderSupplier()
+                        supplier = new PohodaCreateStock.stockStockHeaderSupplier
                         {
                             id = 1
                         },
                         producer = i.MANUFACTURER,
                         description = i.DESCRIPTION,
-                        pictures = new PohodaCreateStock.stockStockHeaderPictures()
+                        pictures = new PohodaCreateStock.stockStockHeaderPictures
                         {
-                            picture = new PohodaCreateStock.stockStockHeaderPicturesPicture()
+                            picture = new PohodaCreateStock.stockStockHeaderPicturesPicture
                             {
                                 @default = true,
                                 description = "obrazok produktu",
@@ -87,7 +81,7 @@ namespace ExpandoFeedTransformer.Factories.Pohoda
                             }
                         },
                         note = "Importovane z xml",
-                        relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks()
+                        relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks
                         {
                             relatedLink = new PohodaCreateStock.stockStockHeaderRelatedLinksRelatedLink
                             {
