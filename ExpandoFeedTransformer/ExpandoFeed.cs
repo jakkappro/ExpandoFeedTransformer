@@ -67,7 +67,7 @@ namespace ExpandoFeedTransformer
 
             private object deliveryBranchIdField;
 
-            private byte shippingPriceField;
+            private decimal shippingPriceField;
 
             private string latestShipDateField;
 
@@ -201,7 +201,7 @@ namespace ExpandoFeedTransformer
             }
 
    
-            public byte shippingPrice
+            public decimal shippingPrice
             {
                 get => shippingPriceField;
                 set => shippingPriceField = value;
@@ -477,7 +477,7 @@ namespace ExpandoFeedTransformer
 
             private byte promotionDiscountTaxField;
 
-            private byte shippingPriceField;
+            private decimal shippingPriceField;
 
             private decimal shippingTaxField;
 
@@ -569,7 +569,7 @@ namespace ExpandoFeedTransformer
             }
 
    
-            public byte shippingPrice
+            public decimal shippingPrice
             {
                 get => shippingPriceField;
                 set => shippingPriceField = value;

@@ -17,7 +17,7 @@ namespace ExpandoFeedTransformer
             var days = 0;
             if (args.Length == 0 || !int.TryParse(args[0], out days))
             {
-                days = 1;
+                days = 10;
             }
             var line = "000";
             try
@@ -37,12 +37,12 @@ namespace ExpandoFeedTransformer
             var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
                 "http://127.0.0.1:5336", "admin", "acecom", 1000, 3);
 
-            mServer.StartServer();
+            //mServer.StartServer();
 
-            if (!await mServer.IsConnectionAvailable())
+            //if (!await mServer.IsConnectionAvailable())
             {
                 Console.WriteLine("Couldn't connect to mServer");
-                return;
+                //return;
             }
 
 
