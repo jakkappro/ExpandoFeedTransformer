@@ -14,7 +14,11 @@ namespace ExpandoFeedTransformer
 
         private static async Task Main(string[] args)
         {
-            var days = args[0];
+            var days = 0;
+            if (int.TryParse(args[0], out days))
+            {
+                days = 1;
+            }
             var line = "000";
             try
             {
@@ -44,7 +48,7 @@ namespace ExpandoFeedTransformer
 
             Console.WriteLine("Getting expando feed");
 
-            var orders = await GetExpandoOrders(int.Parse(days));
+            var orders = await GetExpandoOrders(days);
 
             Console.WriteLine("Getting prehome feed");
 
