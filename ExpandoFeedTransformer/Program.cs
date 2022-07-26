@@ -142,6 +142,7 @@ namespace ExpandoFeedTransformer
 
                 foreach (var item in order.items)
                 {
+                    Console.WriteLine($"Trying to get stock EAN: {item.itemId}");
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
                     Console.WriteLine($"Found stock {i.URL}");
                     shopItems.Add(i);
