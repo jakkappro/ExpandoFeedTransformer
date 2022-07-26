@@ -135,6 +135,7 @@ namespace ExpandoFeedTransformer
 
             foreach (var order in orders.order)
             {
+                var useCheapRow = false;
                 Console.WriteLine($"Creating order {order.orderId}.");
                 using var client = new HttpClient();
 
@@ -148,10 +149,12 @@ namespace ExpandoFeedTransformer
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
                     if (i is null)
                     {
+                        
                         Console.WriteLine(
                             $"Couldn't find stock, SKU {item.itemId}, skipping stock, creating line item instead \n\n\n");
                         if (item.itemId == 294489)
                         {
+                            useCheapRow = true;
                             if (!created)
                             {
                                 var dataPack = new PohodaCreateStock.dataPack()
@@ -411,6 +414,9 @@ namespace ExpandoFeedTransformer
                 await Task.Delay(1500);
 
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
+
+                if (useCheapRow)
+                    mail.AddCheapRow(order, shopItems);
 
                 mail.AddRow(order, shopItems);
             }
