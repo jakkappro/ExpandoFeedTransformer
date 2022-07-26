@@ -296,6 +296,7 @@ namespace ExpandoFeedTransformer
                         Console.WriteLine("Couldn't find stock, creating new one");
                         var dataPack = await PohodaCreateStockFactory.CreateRequest(i, path, client);
                         Console.WriteLine("Sending request");
+                        Console.WriteLine(PohodaCreateStock.dataPack.Serialize(dataPack) + "\n");
                         await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
                     }
                     else
