@@ -462,7 +462,11 @@ namespace ExpandoFeedTransformer
                         houseNumber = string.IsNullOrWhiteSpace(order.customer.address.address2)
                             ? ""
                             : order.customer.address.address2,
-                        city = order.customer.address.city
+                        city = order.customer.address.city,
+                        security = new PacketaCreateOrder.createPacketPacketAttributesSecurity()
+                        {
+                            allowPublicTracking = 1
+                        }
                     }
                 };
 
@@ -496,24 +500,24 @@ namespace ExpandoFeedTransformer
                 }
             }
 
-            foreach (var p in orderIds.Select(orderId => new PacketaGenerateLabel.packetLabelPdf()
-                     {
-                         apiPassword = apiPassword,
-                         format = "A6 on A4",
-                         offset = 0,
-                         packetId = orderId
-                     }))
-            {
-                var pdf = PacketaGenerateLabelResponse.Deserialize(await (await httpClient.PostAsync("",
-                        new ByteArrayContent(
-                            Encoding.ASCII.GetBytes(PacketaGenerateLabel.packetLabelPdf.Serialize(p)))))
-                    .Content.ReadAsStringAsync());
-
-                await using var stream = GenerateStreamFromString(pdf.result);
-                var buffer = new byte[stream.Length];
-                stream.Read(buffer, 0, buffer.Length);
-                await File.WriteAllBytesAsync($"{p.packetId}.pdf", buffer);
-            }
+            // foreach (var p in orderIds.Select(orderId => new PacketaGenerateLabel.packetLabelPdf()
+            //          {
+            //              apiPassword = apiPassword,
+            //              format = "A6 on A4",
+            //              offset = 0,
+            //              packetId = orderId
+            //          }))
+            // {
+            //     var pdf = PacketaGenerateLabelResponse.Deserialize(await (await httpClient.PostAsync("",
+            //             new ByteArrayContent(
+            //                 Encoding.ASCII.GetBytes(PacketaGenerateLabel.packetLabelPdf.Serialize(p)))))
+            //         .Content.ReadAsStringAsync());
+            //
+            //     await using var stream = GenerateStreamFromString(pdf.result);
+            //     var buffer = new byte[stream.Length];
+            //     stream.Read(buffer, 0, buffer.Length);
+            //     await File.WriteAllBytesAsync($"{p.packetId}.pdf", buffer);
+            // }
 
 
             Console.WriteLine("Sending mail");
