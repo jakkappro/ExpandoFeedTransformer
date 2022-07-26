@@ -471,8 +471,11 @@ namespace ExpandoFeedTransformer
                             Encoding.ASCII.GetBytes(PacketaCreateOrder.createPacket.Serialize(packetaOrder))))).Content
                     .ReadAsStringAsync());
 
-                Console.WriteLine(l.result);
-                orderIds.Add(l.result.id);
+                if (l.result is not null)
+                {
+                    Console.WriteLine(l.result);
+                    orderIds.Add(l.result.id);
+                }
 
                 num += 1;
 

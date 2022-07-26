@@ -28,7 +28,7 @@ namespace ExpandoFeedTransformer
                 set => statusField = value;
             }
 
-            public responseResult result
+            public responseResult? result
             {
                 get => resultField;
                 set => resultField = value;
