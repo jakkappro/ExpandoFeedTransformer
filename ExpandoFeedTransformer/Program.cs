@@ -19,7 +19,7 @@ namespace ExpandoFeedTransformer
                 line = await sr.ReadLineAsync();
                 sr.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
@@ -133,7 +133,6 @@ namespace ExpandoFeedTransformer
 
             foreach (var order in orders.order)
             {
-                var failed = false;
                 Console.WriteLine($"Creating order {order.orderId}.");
                 using var client = new HttpClient();
 
@@ -147,10 +146,128 @@ namespace ExpandoFeedTransformer
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
                     if (i is null)
                     {
-                        Console.WriteLine($"Couldn't find stock, EAN {item.itemId}, skipping stock \n\n\n");
-                        failed = true;
+                        Console.WriteLine(
+                            $"Couldn't find stock, SKU {item.itemId}, skipping stock, creating line item instead \n\n\n");
+                        if (item.itemId == 294489)
+                        {
+                            var dataPack = new PohodaCreateStock.dataPack()
+                            {
+                                version = 2.0m,
+                                ico = 53870441,
+                                note = "Imported from xml",
+                                id = "zas001",
+                                application = "StwTest",
+                            };
+
+                            var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
+                            {
+                                version = 2.0m,
+                                id = "ZAS001",
+                                stock = new PohodaCreateStock.stock()
+                                {
+                                    version = 2.0m,
+                                    stockHeader = new PohodaCreateStock.stockStockHeader
+                                    {
+                                        stockType = "card",
+                                        code = item.itemId,
+                                        EAN = "6941057417837",
+                                        PLU = 0,
+                                        isSales = false,
+                                        isInternet = true,
+                                        isBatch = true,
+                                        purchasingRateVAT = "high",
+                                        sellingRateVAT = "high",
+                                        name = "Intex 69629 Skladacie vesla 218cm",
+                                        unit = "ks",
+                                        storage = new PohodaCreateStock.stockStockHeaderStorage()
+                                        {
+                                            ids = "Amazon"
+                                        },
+                                        typePrice = new PohodaCreateStock.stockStockHeaderTypePrice()
+                                        {
+                                            ids = "SK"
+                                        },
+                                        purchasingPrice = 0,
+                                        sellingPrice = 15.47m * 1.2m,
+                                        limitMin = 0,
+                                        limitMax = 1000,
+                                        mass = 0,
+                                        supplier = new PohodaCreateStock.stockStockHeaderSupplier()
+                                        {
+                                            id = 1
+                                        },
+                                        //producer = i.MANUFACTURER,
+                                        //description = i.DESCRIPTION,
+                                        pictures = new PohodaCreateStock.stockStockHeaderPictures()
+                                        {
+                                            picture = new PohodaCreateStock.stockStockHeaderPicturesPicture()
+                                            {
+                                                @default = true,
+                                                description = "obrazok produktu",
+                                                filepath = ""
+                                            }
+                                        },
+                                        note = "Importovane z xml",
+                                        relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks()
+                                        {
+                                            relatedLink = new PohodaCreateStock.stockStockHeaderRelatedLinksRelatedLink
+                                            {
+                                                addressURL = "",
+                                                description = "odkaz na produkt",
+                                                order = 1
+                                            }
+                                        },
+                                    }
+                                }
+                            };
+
+                            dataPack.dataPackItem = new[]
+                            {
+                                dataPackItem
+                            };
+
+                            await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
+
+                            var orderItemm = new PohodaCreateOrder.orderOrderItem()
+                            {
+                                text = "Doprava",
+                                quantity = 1,
+                                delivered = 0,
+                                rateVAT = "high",
+                                homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
+                                {
+                                    unitPrice = 5.0m,
+                                    unitPriceSpecified = true
+                                }
+                            };
+
+                            // order item
+                            var orderItemm2 = new PohodaCreateOrder.orderOrderItem()
+                            {
+                                quantity = item.itemQuantity,
+                                delivered = 0,
+                                rateVAT = "high",
+                                stockItem = new PohodaCreateOrder.orderOrderItemStockItem()
+                                {
+                                    stockItem = new PohodaCreateOrder.stockItem()
+                                    {
+                                        EAN = "6941057417837"
+                                    }
+                                },
+                                homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency()
+                                {
+                                    unitPrice = 15.47m * 1.2m,
+                                    unitPriceSpecified = true
+                                }
+                            };
+
+                            orderDetail.Add(orderItemm);
+                            orderDetail.Add(orderItemm2);
+                        }
+
                         break;
                     }
+
                     Console.WriteLine($"Found stock {i.URL}");
                     shopItems.Add(i);
                     var request = PohodaGetStockRequestFactory.CreateRequest(item);
@@ -205,7 +322,7 @@ namespace ExpandoFeedTransformer
                     orderDetail.Add(orderItem2);
                 }
 
-                if (order.orderStatus == "Canceled" || failed)
+                if (order.orderStatus == "Canceled")
                 {
                     // update order to canceled
                     continue;
@@ -272,9 +389,7 @@ namespace ExpandoFeedTransformer
                                         ? "Doprava DE"
                                         : "Doprava AT"
                                 },
-
                             },
-                            // not good solution what about more items at once can i even do it TODO: figure it out :D
                             orderDetail = orderDetail.ToArray(),
                             orderSummary = new PohodaCreateOrder.orderOrderSummary()
                             {
@@ -308,7 +423,7 @@ namespace ExpandoFeedTransformer
                 await sw.WriteAsync(write);
                 sw.Close();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.Message);
             }
