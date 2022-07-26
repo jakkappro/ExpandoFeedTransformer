@@ -141,7 +141,7 @@ namespace ExpandoFeedTransformer
             foreach (var order in orders.order)
             {
                 var useCheapRow = false;
-                Console.WriteLine($"Creating order {order.orderId}.");
+                Console.WriteLine($"Trying to create order {order.orderId}.");
                 using var client = new HttpClient();
 
                 var orderDetail = new List<PohodaCreateOrder.orderOrderItem>();
@@ -283,20 +283,24 @@ namespace ExpandoFeedTransformer
                         continue;
                     }
 
-                    Console.WriteLine($"Found stock {i.URL}");
+                    Console.WriteLine($"Found stock in prehome feed: {i.URL}");
                     shopItems.Add(i);
                     var request = PohodaGetStockRequestFactory.CreateRequest(item);
 
                     var response =
                         PohodaGetStockResponse.Deserialize(
                             await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
-
+                    
                     if (response.responsePackItem.listStock.stock is null)
                     {
                         Console.WriteLine("Couldn't find stock, creating new one");
                         var dataPack = await PohodaCreateStockFactory.CreateRequest(i, path, client);
                         Console.WriteLine("Sending request");
                         await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Found stock in pohoda SKU: {i.ITEM_ID}");
                     }
 
                     // shipping
@@ -343,6 +347,7 @@ namespace ExpandoFeedTransformer
                     continue;
                 }
 
+                Console.WriteLine($"Creating order {order.orderId}");
                 var orderDataPack = new PohodaCreateOrder.dataPack()
                 {
                     version = 2.0m,
@@ -420,10 +425,17 @@ namespace ExpandoFeedTransformer
 
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
 
+
                 if (useCheapRow)
+                {
+                    Console.WriteLine("Adding predefined items to mail.");
                     mail.AddCheapRow(order, shopItems);
+                }
                 else
+                {
+                    shopItems.ForEach(e => Console.WriteLine($"Adding item {e.ITEM_ID} to mail."));
                     mail.AddRow(order, shopItems);
+                }
             }
 
             Console.WriteLine("Sending mail");
