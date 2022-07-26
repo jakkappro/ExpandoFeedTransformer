@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics.Tracing;
+using System.Net;
 using System.Text;
 using ExpandoFeedTransformer.Factories.Pohoda;
 using ExpandoFeedTransformer.Services;
@@ -9,6 +10,7 @@ namespace ExpandoFeedTransformer
     {
         private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
         private static ulong num = 3;
+        private static bool created = false;
 
         private static async Task Main(string[] args)
         {
@@ -150,83 +152,88 @@ namespace ExpandoFeedTransformer
                             $"Couldn't find stock, SKU {item.itemId}, skipping stock, creating line item instead \n\n\n");
                         if (item.itemId == 294489)
                         {
-                            var dataPack = new PohodaCreateStock.dataPack()
+                            if (!created)
                             {
-                                version = 2.0m,
-                                ico = 53870441,
-                                note = "Imported from xml",
-                                id = "zas001",
-                                application = "StwTest",
-                            };
-
-                            var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
-                            {
-                                version = 2.0m,
-                                id = "ZAS001",
-                                stock = new PohodaCreateStock.stock()
+                                var dataPack = new PohodaCreateStock.dataPack()
                                 {
                                     version = 2.0m,
-                                    stockHeader = new PohodaCreateStock.stockStockHeader
+                                    ico = 53870441,
+                                    note = "Imported from xml",
+                                    id = "zas001",
+                                    application = "StwTest",
+                                };
+
+                                var dataPackItem = new PohodaCreateStock.dataPackDataPackItem()
+                                {
+                                    version = 2.0m,
+                                    id = "ZAS001",
+                                    stock = new PohodaCreateStock.stock()
                                     {
-                                        stockType = "card",
-                                        code = item.itemId,
-                                        EAN = "6941057417837",
-                                        PLU = 0,
-                                        isSales = false,
-                                        isInternet = true,
-                                        isBatch = true,
-                                        purchasingRateVAT = "high",
-                                        sellingRateVAT = "high",
-                                        name = "Intex 69629 Skladacie vesla 218cm",
-                                        unit = "ks",
-                                        storage = new PohodaCreateStock.stockStockHeaderStorage()
+                                        version = 2.0m,
+                                        stockHeader = new PohodaCreateStock.stockStockHeader
                                         {
-                                            ids = "Amazon"
-                                        },
-                                        typePrice = new PohodaCreateStock.stockStockHeaderTypePrice()
-                                        {
-                                            ids = "SK"
-                                        },
-                                        purchasingPrice = 0,
-                                        sellingPrice = 15.47m * 1.2m,
-                                        limitMin = 0,
-                                        limitMax = 1000,
-                                        mass = 0,
-                                        supplier = new PohodaCreateStock.stockStockHeaderSupplier()
-                                        {
-                                            id = 1
-                                        },
-                                        //producer = i.MANUFACTURER,
-                                        //description = i.DESCRIPTION,
-                                        pictures = new PohodaCreateStock.stockStockHeaderPictures()
-                                        {
-                                            picture = new PohodaCreateStock.stockStockHeaderPicturesPicture()
+                                            stockType = "card",
+                                            code = item.itemId,
+                                            EAN = "6941057417837",
+                                            PLU = 0,
+                                            isSales = false,
+                                            isInternet = true,
+                                            isBatch = true,
+                                            purchasingRateVAT = "high",
+                                            sellingRateVAT = "high",
+                                            name = "Intex 69629 Skladacie vesla 218cm",
+                                            unit = "ks",
+                                            storage = new PohodaCreateStock.stockStockHeaderStorage()
                                             {
-                                                @default = true,
-                                                description = "obrazok produktu",
-                                                filepath = ""
-                                            }
-                                        },
-                                        note = "Importovane z xml",
-                                        relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks()
-                                        {
-                                            relatedLink = new PohodaCreateStock.stockStockHeaderRelatedLinksRelatedLink
+                                                ids = "Amazon"
+                                            },
+                                            typePrice = new PohodaCreateStock.stockStockHeaderTypePrice()
                                             {
-                                                addressURL = "",
-                                                description = "odkaz na produkt",
-                                                order = 1
-                                            }
-                                        },
+                                                ids = "SK"
+                                            },
+                                            purchasingPrice = 0,
+                                            sellingPrice = 15.47m,
+                                            limitMin = 0,
+                                            limitMax = 1000,
+                                            mass = 0,
+                                            supplier = new PohodaCreateStock.stockStockHeaderSupplier()
+                                            {
+                                                id = 1
+                                            },
+                                            //producer = i.MANUFACTURER,
+                                            //description = i.DESCRIPTION,
+                                            pictures = new PohodaCreateStock.stockStockHeaderPictures()
+                                            {
+                                                picture = new PohodaCreateStock.stockStockHeaderPicturesPicture()
+                                                {
+                                                    @default = true,
+                                                    description = "obrazok produktu",
+                                                    filepath = ""
+                                                }
+                                            },
+                                            note = "Importovane z xml",
+                                            relatedLinks = new PohodaCreateStock.stockStockHeaderRelatedLinks()
+                                            {
+                                                relatedLink =
+                                                    new PohodaCreateStock.stockStockHeaderRelatedLinksRelatedLink
+                                                    {
+                                                        addressURL = "",
+                                                        description = "odkaz na produkt",
+                                                        order = 1
+                                                    }
+                                            },
+                                        }
                                     }
-                                }
-                            };
+                                };
 
-                            dataPack.dataPackItem = new[]
-                            {
-                                dataPackItem
-                            };
+                                dataPack.dataPackItem = new[]
+                                {
+                                    dataPackItem
+                                };
 
-                            await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
+                                await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
+                                created = true;
+                            }
 
                             var orderItemm = new PohodaCreateOrder.orderOrderItem()
                             {
@@ -265,7 +272,7 @@ namespace ExpandoFeedTransformer
                             orderDetail.Add(orderItemm2);
                         }
 
-                        break;
+                        continue;
                     }
 
                     Console.WriteLine($"Found stock {i.URL}");
