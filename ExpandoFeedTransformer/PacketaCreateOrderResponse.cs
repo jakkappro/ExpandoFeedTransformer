@@ -40,7 +40,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true)]
         public class responseResult
         {
-            private ulong idField;
+            private long idField;
 
             private string barcodeField;
 
