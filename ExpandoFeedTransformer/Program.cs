@@ -133,6 +133,7 @@ namespace ExpandoFeedTransformer
 
             foreach (var order in orders.order)
             {
+                var failed = false;
                 Console.WriteLine($"Creating order {order.orderId}.");
                 using var client = new HttpClient();
 
@@ -144,6 +145,12 @@ namespace ExpandoFeedTransformer
                 {
                     Console.WriteLine($"Trying to get stock EAN: {item.itemId}");
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
+                    if (i is null)
+                    {
+                        Console.WriteLine($"Couldn't find stock, EAN {item.itemId}, skipping stock \n\n\n");
+                        failed = true;
+                        break;
+                    }
                     Console.WriteLine($"Found stock {i.URL}");
                     shopItems.Add(i);
                     var request = PohodaGetStockRequestFactory.CreateRequest(item);
@@ -198,7 +205,7 @@ namespace ExpandoFeedTransformer
                     orderDetail.Add(orderItem2);
                 }
 
-                if (order.orderStatus == "Canceled")
+                if (order.orderStatus == "Canceled" || failed)
                 {
                     // update order to canceled
                     continue;
