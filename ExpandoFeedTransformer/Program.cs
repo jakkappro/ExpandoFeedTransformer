@@ -200,7 +200,7 @@ namespace ExpandoFeedTransformer
                                                 ids = "SK"
                                             },
                                             purchasingPrice = 0,
-                                            sellingPrice = 15.47m,
+                                            sellingPrice = 15.47m * 1.25m,
                                             limitMin = 0,
                                             limitMax = 1000,
                                             mass = 0,

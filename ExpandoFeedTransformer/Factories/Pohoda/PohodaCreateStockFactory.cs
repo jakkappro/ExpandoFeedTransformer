@@ -67,7 +67,7 @@ namespace ExpandoFeedTransformer.Factories.Pohoda
                             ids = "SK"
                         },
                         purchasingPrice = 0,
-                        sellingPrice = i.PRICE * 1.2m,
+                        sellingPrice = i.PRICE * 1.25m,
                         limitMin = 0,
                         limitMax = 1000,
                         mass = i.WEIGHT,
