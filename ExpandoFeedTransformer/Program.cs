@@ -22,7 +22,7 @@ namespace ExpandoFeedTransformer
             var days = 0;
             if (args.Length == 0 || !int.TryParse(args[0], out days))
             {
-                days = 10;
+                days = 1;
             }
 
             var line = "000";
