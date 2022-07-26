@@ -15,7 +15,7 @@ namespace ExpandoFeedTransformer
         private static async Task Main(string[] args)
         {
             var days = 0;
-            if (int.TryParse(args[0], out days))
+            if (!int.TryParse(args[0], out days))
             {
                 days = 1;
             }
