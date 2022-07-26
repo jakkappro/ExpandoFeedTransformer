@@ -5,19 +5,26 @@ using ExpandoFeedTransformer.Services;
 
 namespace ExpandoFeedTransformer
 {
-    internal class Program
+    public class Program
     {
         private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
         private static ulong num = 3;
         private static bool created;
 
+
         private static async Task Main(string[] args)
         {
+            var apiPassword = "2d20b17664867cd0fe1dc38c0195ac36";
+            var httpClient = new HttpClient() { BaseAddress = new Uri("https://www.zasilkovna.cz/api/rest/") };
+
+            var orderIds = new List<long>();
+
             var days = 0;
             if (args.Length == 0 || !int.TryParse(args[0], out days))
             {
                 days = 10;
             }
+
             var line = "000";
             try
             {
@@ -153,7 +160,6 @@ namespace ExpandoFeedTransformer
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
                     if (i is null)
                     {
-                        
                         Console.WriteLine(
                             $"Couldn't find stock, SKU {item.itemId}, skipping stock, creating line item instead \n\n\n");
                         if (item.itemId == 294489)
@@ -287,7 +293,7 @@ namespace ExpandoFeedTransformer
                     var response =
                         PohodaGetStockResponse.Deserialize(
                             await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
-                    
+
                     if (response.responsePackItem.listStock.stock is null)
                     {
                         Console.WriteLine("Couldn't find stock, creating new one");
@@ -316,7 +322,6 @@ namespace ExpandoFeedTransformer
                         {
                             ids = "GD"
                         },
-
                     };
 
                     // order item
@@ -334,7 +339,7 @@ namespace ExpandoFeedTransformer
                         },
                         homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
                         {
-                            unitPrice = i.PRICE_VAT,
+                            unitPrice = i.PRICE_VAT * 1.25m,
                         },
                         typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
                         {
@@ -408,12 +413,13 @@ namespace ExpandoFeedTransformer
                                 {
                                     ids = order.customer.address.country == "DE"
                                         ? "DE"
-                                        : "AT" 
+                                        : "AT"
                                 },
-                                evidentiaryResourcesMOSS = new PohodaCreateOrder.orderOrderHeaderEvidentiaryResourcesMOSS()
-                                {
-                                    ids = "A"
-                                },
+                                evidentiaryResourcesMOSS =
+                                    new PohodaCreateOrder.orderOrderHeaderEvidentiaryResourcesMOSS()
+                                    {
+                                        ids = "A"
+                                    },
                                 number = new PohodaCreateOrder.orderOrderHeaderNumber
                                 {
                                     numberRequested = num
@@ -436,6 +442,37 @@ namespace ExpandoFeedTransformer
                     }
                 };
 
+                var packetaOrder = new PacketaCreateOrder.createPacket()
+                {
+                    apiPassword = apiPassword,
+                    packetAttributes = new PacketaCreateOrder.createPacketPacketAttributes
+                    {
+                        number = num.ToString(),
+                        name = order.customer.firstname,
+                        surname = order.customer.surname,
+                        email = order.customer.email,
+                        addressId = (uint)(order.customer.address.country == "DE" ? 13613 : 60),
+                        value = order.totalPrice,
+                        eshop = "AzetCool",
+                        weight = 0.99m,
+                        sender_id = 331585,
+                        phone = order.customer.phone,
+                        zip = order.customer.address.zip,
+                        street = order.customer.address.address1,
+                        houseNumber = string.IsNullOrWhiteSpace(order.customer.address.address2)
+                            ? ""
+                            : order.customer.address.address2,
+                        city = order.customer.address.city
+                    }
+                };
+
+                var l = PacketaCreateOrderResponse.Deserialize(await (await httpClient.PostAsync("",
+                        new ByteArrayContent(
+                            Encoding.ASCII.GetBytes(PacketaCreateOrder.createPacket.Serialize(packetaOrder))))).Content
+                    .ReadAsStringAsync());
+
+                orderIds.Add(l.result.id);
+
                 num += 1;
 
                 await Task.Delay(1500);
@@ -455,11 +492,32 @@ namespace ExpandoFeedTransformer
                 }
             }
 
+            foreach (var p in orderIds.Select(orderId => new PacketaGenerateLabel.packetLabelPdf()
+                     {
+                         apiPassword = apiPassword,
+                         format = "A6 on A4",
+                         offset = 0,
+                         packetId = orderId
+                     }))
+            {
+                var pdf = PacketaGenerateLabelResponse.Deserialize(await (await httpClient.PostAsync("",
+                        new ByteArrayContent(
+                            Encoding.ASCII.GetBytes(PacketaGenerateLabel.packetLabelPdf.Serialize(p)))))
+                    .Content.ReadAsStringAsync());
+
+                await using var stream = GenerateStreamFromString(pdf.result);
+                var buffer = new byte[stream.Length];
+                stream.Read(buffer, 0, buffer.Length);
+                await File.WriteAllBytesAsync($"{p.packetId}.pdf", buffer);
+            }
+
+
             Console.WriteLine("Sending mail");
             mail.PopulateTemplate();
             mail.SendMail();
             Console.WriteLine("Finished");
             Console.Read();
+
             // mServer.StopServer();
 
             try
@@ -506,6 +564,16 @@ namespace ExpandoFeedTransformer
             }
 
             return ExpandoFeed.Deserialize(await response.Content.ReadAsStringAsync());
+        }
+
+        public static Stream GenerateStreamFromString(string s)
+        {
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(s);
+            writer.Flush();
+            stream.Position = 0;
+            return stream;
         }
     }
 }
