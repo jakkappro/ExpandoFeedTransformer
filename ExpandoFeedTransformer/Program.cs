@@ -41,7 +41,7 @@ namespace ExpandoFeedTransformer
 
             Console.WriteLine("Getting expando feed");
 
-            var orders = await GetExpandoOrders(1);
+            var orders = await GetExpandoOrders(6);
 
             Console.WriteLine("Getting prehome feed");
 
