@@ -261,11 +261,11 @@ namespace ExpandoFeedTransformer
             Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderNumber
         {
-            private uint numberRequestedField;
+            private ulong numberRequestedField;
 
             [XmlElement(Namespace =
                 "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public uint numberRequested
+            public ulong numberRequested
             {
                 get => numberRequestedField;
                 set => numberRequestedField = value;
