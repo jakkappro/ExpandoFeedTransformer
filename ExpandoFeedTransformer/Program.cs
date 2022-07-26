@@ -417,7 +417,7 @@ namespace ExpandoFeedTransformer
 
             try
             {
-                var s = num.ToString();
+                var s = num.ToString().Substring(num.ToString().Length - 3);
                 var write = s.Length >= 3 ? s : s.Length == 2 ? "0" + s : "00" + s;
                 var sw = new StreamWriter("index.txt", false, Encoding.ASCII);
                 await sw.WriteAsync(write);
