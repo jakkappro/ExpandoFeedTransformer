@@ -14,6 +14,7 @@ namespace ExpandoFeedTransformer
 
         private static async Task Main(string[] args)
         {
+            var days = args[0];
             var line = "000";
             try
             {
@@ -43,7 +44,7 @@ namespace ExpandoFeedTransformer
 
             Console.WriteLine("Getting expando feed");
 
-            var orders = await GetExpandoOrders(6);
+            var orders = await GetExpandoOrders(int.Parse(days));
 
             Console.WriteLine("Getting prehome feed");
 
@@ -417,8 +418,8 @@ namespace ExpandoFeedTransformer
 
                 if (useCheapRow)
                     mail.AddCheapRow(order, shopItems);
-
-                mail.AddRow(order, shopItems);
+                else
+                    mail.AddRow(order, shopItems);
             }
 
             Console.WriteLine("Sending mail");
