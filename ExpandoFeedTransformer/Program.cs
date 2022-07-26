@@ -133,6 +133,7 @@ namespace ExpandoFeedTransformer
 
             foreach (var order in orders.order)
             {
+                Console.WriteLine($"Creating order {order.orderId}.");
                 using var client = new HttpClient();
 
                 var orderDetail = new List<PohodaCreateOrder.orderOrderItem>();
@@ -142,7 +143,7 @@ namespace ExpandoFeedTransformer
                 foreach (var item in order.items)
                 {
                     var i = items.Find(e => e.ITEM_ID == item.itemId);
-
+                    Console.WriteLine($"Found stock {i.URL}");
                     shopItems.Add(i);
                     var request = PohodaGetStockRequestFactory.CreateRequest(item);
 
