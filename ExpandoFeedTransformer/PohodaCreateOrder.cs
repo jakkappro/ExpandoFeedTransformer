@@ -11,6 +11,7 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/data.xsd", IsNullable = false)]
         public class dataPack
         {
+
             private dataPackDataPackItem dataPackItemField;
 
             private string idField;
@@ -63,12 +64,13 @@ namespace ExpandoFeedTransformer
                 get => noteField;
                 set => noteField = value;
             }
-
+            
             public static string Serialize(dataPack data)
             {
                 var x = new XmlSerializer(data.GetType());
 
-                TextWriter writer = new Utf8StringWriter();
+                var memoryStream = new MemoryStream();
+                var writer = new StreamWriter(memoryStream, System.Text.Encoding.UTF8);
                 x.Serialize(writer, data);
                 var s = writer.ToString() ?? throw new InvalidOperationException();
                 writer.Flush();
@@ -82,6 +84,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/data.xsd")]
         public class dataPackDataPackItem
         {
+
             private order orderField;
 
             private string idField;
@@ -116,6 +119,7 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd", IsNullable = false)]
         public class order
         {
+
             private orderOrderHeader orderHeaderField;
 
             private orderOrderItem[] orderDetailField;
@@ -156,6 +160,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeader
         {
+
             private string orderTypeField;
 
             private string numberOrderField;
@@ -178,13 +183,13 @@ namespace ExpandoFeedTransformer
 
             private orderOrderHeaderEvidentiaryResourcesMOSS evidentiaryResourcesMOSSField;
 
-            private orderOrderHeaderCarrier carrierField;
-
-            private bool isDeliveredField;
+            private bool isExecutedField;
 
             private orderOrderHeaderNumber numberField;
 
-            private bool isExecutedField;
+            private bool isDeliveredField;
+
+            private orderOrderHeaderCarrier carrierField;
 
             public string orderType
             {
@@ -255,16 +260,10 @@ namespace ExpandoFeedTransformer
                 set => evidentiaryResourcesMOSSField = value;
             }
 
-            public orderOrderHeaderCarrier carrier
+            public bool isExecuted
             {
-                get => carrierField;
-                set => carrierField = value;
-            }
-
-            public bool isDelivered
-            {
-                get => isDeliveredField;
-                set => isDeliveredField = value;
+                get => isExecutedField;
+                set => isExecutedField = value;
             }
 
             public orderOrderHeaderNumber number
@@ -273,10 +272,16 @@ namespace ExpandoFeedTransformer
                 set => numberField = value;
             }
 
-            public bool isExecuted
+            public bool isDelivered
             {
-                get => isExecutedField;
-                set => isExecutedField = value;
+                get => isDeliveredField;
+                set => isDeliveredField = value;
+            }
+
+            public orderOrderHeaderCarrier carrier
+            {
+                get => carrierField;
+                set => carrierField = value;
             }
         }
 
@@ -285,6 +290,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderPartnerIdentity
         {
+
             private address addressField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -301,6 +307,7 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
         public class address
         {
+
             private string companyField;
 
             private string divisionField;
@@ -317,11 +324,11 @@ namespace ExpandoFeedTransformer
 
             private string dicField;
 
-            private string mobilPhoneField;
+            private string emailField;
 
             private addressCountry countryField;
 
-            private string emailField;
+            private string mobilPhoneField;
 
             public string company
             {
@@ -371,10 +378,10 @@ namespace ExpandoFeedTransformer
                 set => dicField = value;
             }
 
-            public string mobilPhone
+            public string email
             {
-                get => mobilPhoneField;
-                set => mobilPhoneField = value;
+                get => emailField;
+                set => emailField = value;
             }
 
             public addressCountry country
@@ -383,10 +390,10 @@ namespace ExpandoFeedTransformer
                 set => countryField = value;
             }
 
-            public string email
+            public string mobilPhone
             {
-                get => emailField;
-                set => emailField = value;
+                get => mobilPhoneField;
+                set => mobilPhoneField = value;
             }
         }
 
@@ -395,6 +402,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
         public class addressCountry
         {
+
             private string idsField;
 
             public string ids
@@ -409,6 +417,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderPaymentType
         {
+
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -424,6 +433,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderPriceLevel
         {
+
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -439,6 +449,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderMOSS
         {
+
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -454,21 +465,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderEvidentiaryResourcesMOSS
         {
-            private string idsField;
 
-            [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public string ids
-            {
-                get => idsField;
-                set => idsField = value;
-            }
-        }
-
-        [Serializable]
-        [DesignerCategory("code")]
-        [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-        public class orderOrderHeaderCarrier
-        {
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -484,10 +481,11 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderHeaderNumber
         {
-            private ulong numberRequestedField;
+
+            private string numberRequestedField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-            public ulong numberRequested
+            public string numberRequested
             {
                 get => numberRequestedField;
                 set => numberRequestedField = value;
@@ -497,13 +495,30 @@ namespace ExpandoFeedTransformer
         [Serializable]
         [DesignerCategory("code")]
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+        public class orderOrderHeaderCarrier
+        {
+
+            private string idsField;
+
+            [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+            public string ids
+            {
+                get => idsField;
+                set => idsField = value;
+            }
+        }
+
+        [Serializable]
+        [DesignerCategory("code")]
+        [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderItem
         {
+
             private string textField;
 
-            private decimal quantityField;
+            private byte quantityField;
 
-            private decimal deliveredField;
+            private byte deliveredField;
 
             private string rateVATField;
 
@@ -513,19 +528,21 @@ namespace ExpandoFeedTransformer
 
             private orderOrderItemTypeServiceMOSS typeServiceMOSSField;
 
+            private bool payVATField;
+
             public string text
             {
                 get => textField;
                 set => textField = value;
             }
 
-            public decimal quantity
+            public byte quantity
             {
                 get => quantityField;
                 set => quantityField = value;
             }
 
-            public decimal delivered
+            public byte delivered
             {
                 get => deliveredField;
                 set => deliveredField = value;
@@ -554,6 +571,12 @@ namespace ExpandoFeedTransformer
                 get => typeServiceMOSSField;
                 set => typeServiceMOSSField = value;
             }
+
+            public bool payVAT
+            {
+                get => payVATField;
+                set => payVATField = value;
+            }
         }
 
         [Serializable]
@@ -561,6 +584,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderItemHomeCurrency
         {
+
             private decimal unitPriceField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -576,6 +600,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderItemStockItem
         {
+
             private stockItem stockItemField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -592,12 +617,13 @@ namespace ExpandoFeedTransformer
         [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
         public class stockItem
         {
-            private string eanField;
+
+            private string eANField;
 
             public string EAN
             {
-                get => eanField;
-                set => eanField = value;
+                get => eANField;
+                set => eANField = value;
             }
         }
 
@@ -606,6 +632,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderItemTypeServiceMOSS
         {
+
             private string idsField;
 
             [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
@@ -621,6 +648,7 @@ namespace ExpandoFeedTransformer
         [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
         public class orderOrderSummary
         {
+
             private string roundingDocumentField;
 
             public string roundingDocument
@@ -629,5 +657,8 @@ namespace ExpandoFeedTransformer
                 set => roundingDocumentField = value;
             }
         }
+
+
+
     }
 }

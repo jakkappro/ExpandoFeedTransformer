@@ -42,7 +42,7 @@ namespace ExpandoFeedTransformer.Services
             _itemTemplate = template;
         }
 
-        public void AddRow(ExpandoFeed.ordersOrder order, List<PrehomeFeed.SHOPSHOPITEM> items)
+        public void AddRow(ExpandoFeed.ordersOrder order, List<PrehomeFeed.SHOPSHOPITEM> items, string pohodaId)
         {
             _rows += _rowTemplate;
             _rows = _rows.Replace("[[OrderId]]", order.orderId);
@@ -56,6 +56,7 @@ namespace ExpandoFeedTransformer.Services
             _rows = _rows.Replace("[[city]]", order.customer.address.city);
             _rows = _rows.Replace("[[zip]]", order.customer.address.zip);
             _rows = _rows.Replace("[[country]]", order.customer.address.country);
+            _rows = _rows.Replace("[[PohodaId", pohodaId);
 
             var data = "";
 

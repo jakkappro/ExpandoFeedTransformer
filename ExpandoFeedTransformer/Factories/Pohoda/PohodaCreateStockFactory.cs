@@ -61,7 +61,7 @@
                             ids = "SK"
                         },
                         purchasingPrice = 0,
-                        sellingPrice = i.PRICE * Program.sellingPriceCo,
+                        sellingPrice = i.PRICE * Program.SellingPriceCo,
                         limitMin = 0,
                         limitMax = 1000,
                         mass = i.WEIGHT,

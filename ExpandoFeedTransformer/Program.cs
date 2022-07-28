@@ -5,10 +5,10 @@ using ExpandoFeedTransformer.Services;
 
 namespace ExpandoFeedTransformer
 {
-    public class Program
+    public static class Program
     {
-        private const string path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
-        public const decimal sellingPriceCo = 1.25m;
+        private const string Path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
+        public const decimal SellingPriceCo = 1.25m;
 
         private static async Task Main(string[] args)
         {
@@ -20,7 +20,7 @@ namespace ExpandoFeedTransformer
             var days = 0;
             if (args.Length == 0 || !int.TryParse(args[0], out days))
             {
-                days = 10;
+                days = 1;
             }
 
             var line = "001";
@@ -78,6 +78,7 @@ namespace ExpandoFeedTransformer
                                             <table cellpadding=""0"" cellspacing=""5"" align="" left"" border=""1"">
                                                 <tr>
                                                     <td>OrderId</td>
+                                                    <td>PohodaId</td>
                                                     <td>purchaseDate</td>
                                                     <td>latestShipDate</td>
                                                     <td>totalPrice</td>
@@ -109,6 +110,7 @@ namespace ExpandoFeedTransformer
 
             const string row = @"<tr>
                     <td>[[OrderId]]</td>
+                    <td>[[PohodaId]]</td>
                     <td>[[purchaseDate]]</td>
                     <td>[[latestShipDate]]</td>
                     <td>[[totalPrice]]</td>
@@ -165,73 +167,72 @@ namespace ExpandoFeedTransformer
                     Console.WriteLine($"Trying to get stock EAN: {item.itemId}");
                     var article = prehomeArticles.FirstOrDefault(e => e.ITEM_ID == item.itemId);
 
-                    if (article != null)
+                    if (article == null) 
+                        continue;
+                    
+                    Console.WriteLine($"Found stock in prehome feed: {article.URL}");
+                    shopItems.Add(article);
+                    var request = PohodaGetStockRequestFactory.CreateRequest(item);
+
+                    var response =
+                        PohodaGetStockResponse.Deserialize(
+                            await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
+
+                    if (response.responsePackItem.listStock.stock is null)
                     {
-
-                        Console.WriteLine($"Found stock in prehome feed: {article.URL}");
-                        shopItems.Add(article);
-                        var request = PohodaGetStockRequestFactory.CreateRequest(item);
-
-                        var response =
-                            PohodaGetStockResponse.Deserialize(
-                                await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
-
-                        if (response.responsePackItem.listStock.stock is null)
-                        {
-                            Console.WriteLine("Couldn't find stock, creating new one");
-                            var dataPack = await PohodaCreateStockFactory.CreateRequest(article, path, client);
-                            Console.WriteLine("Sending request");
-                            Console.WriteLine(PohodaCreateStock.dataPack.Serialize(dataPack) + "\n");
-                            await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Found stock in pohoda SKU: {article.ITEM_ID}");
-                        }
-
-                        // shipping
-                        var orderItem = new PohodaCreateOrder.orderOrderItem
-                        {
-                            text = "Doprava",
-                            quantity = 1,
-                            delivered = 0,
-                            rateVAT = "high",
-                            homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
-                            {
-                                unitPrice = 5.0m,
-                            },
-                            typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
-                            {
-                                ids = "GD"
-                            },
-                        };
-
-                        // order item
-                        var orderItem2 = new PohodaCreateOrder.orderOrderItem
-                        {
-                            quantity = item.itemQuantity,
-                            delivered = 0,
-                            rateVAT = "high",
-                            stockItem = new PohodaCreateOrder.orderOrderItemStockItem
-                            {
-                                stockItem = new PohodaCreateOrder.stockItem
-                                {
-                                    EAN = article.EAN
-                                }
-                            },
-                            homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
-                            {
-                                unitPrice = article.PRICE_VAT * sellingPriceCo,
-                            },
-                            typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
-                            {
-                                ids = "GD"
-                            }
-                        };
-
-                        orderDetail.Add(orderItem);
-                        orderDetail.Add(orderItem2);
+                        Console.WriteLine("Couldn't find stock, creating new one");
+                        var dataPack = await PohodaCreateStockFactory.CreateRequest(article, Path, client);
+                        Console.WriteLine("Sending request");
+                        Console.WriteLine(PohodaCreateStock.dataPack.Serialize(dataPack) + "\n");
+                        await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
                     }
+                    else
+                    {
+                        Console.WriteLine($"Found stock in pohoda SKU: {article.ITEM_ID}");
+                    }
+
+                    // shipping
+                    var orderItem = new PohodaCreateOrder.orderOrderItem
+                    {
+                        text = "Doprava",
+                        quantity = 1,
+                        delivered = 0,
+                        rateVAT = "high",
+                        homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
+                        {
+                            unitPrice = 5.0m,
+                        },
+                        typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
+                        {
+                            ids = "GD"
+                        },
+                    };
+
+                    // order item
+                    var orderItem2 = new PohodaCreateOrder.orderOrderItem
+                    {
+                        quantity = item.itemQuantity,
+                        delivered = 0,
+                        rateVAT = "historyHigh",
+                        stockItem = new PohodaCreateOrder.orderOrderItemStockItem
+                        {
+                            stockItem = new PohodaCreateOrder.stockItem
+                            {
+                                EAN = article.EAN
+                            }
+                        },
+                        homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
+                        {
+                            unitPrice = item.itemPrice * SellingPriceCo,
+                        },
+                        typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
+                        {
+                            ids = "GD"
+                        }
+                    };
+
+                    orderDetail.Add(orderItem);
+                    orderDetail.Add(orderItem2);
                 }
 
                 Console.WriteLine($"Creating order {order.orderId}");
@@ -299,7 +300,7 @@ namespace ExpandoFeedTransformer
                                     },
                                 number = new PohodaCreateOrder.orderOrderHeaderNumber
                                 {
-                                    numberRequested = orderNumber
+                                    numberRequested = orderNumber.ToString()
                                 },
                                 isExecuted = false,
                                 carrier = new PohodaCreateOrder.orderOrderHeaderCarrier
@@ -319,56 +320,51 @@ namespace ExpandoFeedTransformer
                     }
                 };
 
-                var fixedAddress = order.customer.address.address1.Replace("ß", "ss");
+                //var fixedAddress = order.customer.address.address1.Replace("ß", "ss");
 
-                var packetaOrder = new PacketaCreateOrder.createPacket()
-                {
-                    apiPassword = apiPassword,
-                    packetAttributes = new PacketaCreateOrder.createPacketPacketAttributes
-                    {
-                        number = orderNumber.ToString(),
-                        name = order.customer.firstname,
-                        surname = order.customer.surname,
-                        email = order.customer.email,
-                        addressId = (uint)(order.customer.address.country == "DE" ? 13613 : 80),
-                        value = order.totalPrice,
-                        eshop = "AzetCool",
-                        weight = 0.99m,
-                        sender_id = 331585, 
-                        phone = order.customer.phone,
-                        zip = order.customer.address.zip,
-                        street = fixedAddress,
-                        houseNumber = string.IsNullOrWhiteSpace(order.customer.address.address2)
-                            ? ""
-                            : order.customer.address.address2,
-                        city = order.customer.address.city,
-                        security = new PacketaCreateOrder.createPacketPacketAttributesSecurity()
-                        {
-                            allowPublicTracking = 1
-                        }
-                    }
-                };
-
-
-
-                var l = PacketaCreateOrderResponse.Deserialize(await (await httpClient.PostAsync("",
-                        new ByteArrayContent(
-                            Encoding.ASCII.GetBytes(PacketaCreateOrder.createPacket.Serialize(packetaOrder))))).Content
-                    .ReadAsStringAsync());
-
-                if (l.result is not null)
-                {
-                    Console.WriteLine(l.result);
-                }
-
-
-
-                orderNumber += 1;
-
+                // var packetaOrder = new PacketaCreateOrder.createPacket()
+                // {
+                //     apiPassword = apiPassword,
+                //     packetAttributes = new PacketaCreateOrder.createPacketPacketAttributes
+                //     {
+                //         number = orderNumber.ToString(),
+                //         name = order.customer.firstname,
+                //         surname = order.customer.surname,
+                //         email = order.customer.email,
+                //         addressId = (uint)(order.customer.address.country == "DE" ? 13613 : 80),
+                //         value = order.totalPrice,
+                //         eshop = "AzetCool",
+                //         weight = 0.99m,
+                //         sender_id = 331585, 
+                //         phone = order.customer.phone,
+                //         zip = order.customer.address.zip,
+                //         street = fixedAddress,
+                //         houseNumber = string.IsNullOrWhiteSpace(order.customer.address.address2)
+                //             ? ""
+                //             : order.customer.address.address2,
+                //         city = order.customer.address.city,
+                //         security = new PacketaCreateOrder.createPacketPacketAttributesSecurity()
+                //         {
+                //             allowPublicTracking = 1
+                //         }
+                //     }
+                // };
+                //
+                //
+                //
+                // var l = PacketaCreateOrderResponse.Deserialize(await (await httpClient.PostAsync("",
+                //         new ByteArrayContent(
+                //             Encoding.ASCII.GetBytes(PacketaCreateOrder.createPacket.Serialize(packetaOrder))))).Content
+                //     .ReadAsStringAsync());
+                //
+                // if (l.result is not null)
+                // {
+                //     Console.WriteLine(l.result);
+                // }
+                
                 await Task.Delay(1500);
 
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
-
 
                 if (useCheapRow)
                 {
@@ -378,8 +374,10 @@ namespace ExpandoFeedTransformer
                 else
                 {
                     shopItems.ForEach(e => Console.WriteLine($"Adding item {e.ITEM_ID} to mail."));
-                    mail.AddRow(order, shopItems);
+                    mail.AddRow(order, shopItems, orderNumber.ToString());
                 }
+                
+                orderNumber += 1;
             }
 
             // foreach (var p in orderIds.Select(orderId => new PacketaGenerateLabel.packetLabelPdf()
@@ -467,7 +465,7 @@ namespace ExpandoFeedTransformer
                         PRODUCTNAME = "Intex 69629 Skladacie vesla 218cm",
                         EAN = "6941057417837",
                         IMGURL = "",
-                        PRICE_VAT = 15.47m * Program.sellingPriceCo,
+                        PRICE_VAT = 15.47m * Program.SellingPriceCo,
                         VAT = 20
                     });
             }
