@@ -190,12 +190,13 @@ namespace ExpandoFeedTransformer
                 var res = await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter));
 
                 var existingOrders =
-                    PohodaGetOrdersByDateResponse.Deserialize(res)
-                        .responsePackItem.listOrder.order.ToList();
+                    PohodaGetOrdersByDateResponse.Deserialize(res);
+
+                var existingOrdersList = existingOrders.responsePackItem.listOrder.order.ToList();
 
                 foreach (var order in expandoOrders.order)
                 {
-                    var exists = existingOrders.Any(existingOrder =>
+                    var exists = existingOrdersList.Any(existingOrder =>
                         existingOrder.orderHeader.numberOrder == order.orderId);
 
                     if (exists)
