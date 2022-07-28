@@ -159,8 +159,49 @@ namespace ExpandoFeedTransformer
             }
             else
             {
+                var ordersFilter = new PohodaGetOrdersByDateRequest.dataPack
+                {
+                    dataPackItem = new PohodaGetOrdersByDateRequest.dataPackDataPackItem
+                    {
+                        listOrderRequest = new PohodaGetOrdersByDateRequest.listOrderRequest
+                        {
+                            requestOrder = new PohodaGetOrdersByDateRequest.listOrderRequestRequestOrder()
+                            {
+                                filter = new PohodaGetOrdersByDateRequest.filter()
+                                {
+                                    dateFrom = (DateTime.Today - TimeSpan.FromDays(days)).ToString("yy-MM-dd"),
+                                    dateTill = DateTime.Now.ToString("yy-MM-dd")
+                                }
+                            },
+                            version = 2.0m,
+                            orderType = "receivedOrder",
+                            orderVersion = 2.0m
+                        },
+                        id = "li1",
+                        version = 2.0m
+                    },
+                    id = 1,
+                    ico = 53870441,
+                    application = "SWTTest",
+                    version = 2.0m,
+                    note = "Export objednavok"
+                };
+
+                var existingOrders =
+                    PohodaGetOrdersByDateResponse.Deserialize(
+                            await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter)))
+                        .responsePackItem.listOrder.order.ToList();
+
                 foreach (var order in expandoOrders.order)
                 {
+                    var exists = existingOrders.Any(existingOrder => existingOrder.orderHeader.numberOrder == order.orderId);
+                    
+                    if (exists)
+                    {
+                        Console.WriteLine("Order {0} already exists", order.orderId);
+                        continue;
+                    }
+                    
                     if (order.orderStatus == "Canceled")
                     {
                         // update order to canceled
