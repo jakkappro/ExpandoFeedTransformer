@@ -178,14 +178,12 @@ public class PohodaGetOrdersByDateRequest
 
         private string dateTillField;
 
-        [XmlElement(DataType = "date")]
         public string dateFrom
         {
             get => dateFromField;
             set => dateFromField = value;
         }
 
-        [XmlElement(DataType = "date")]
         public string dateTill
         {
             get => dateTillField;
