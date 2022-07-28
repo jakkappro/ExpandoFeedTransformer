@@ -23,6 +23,7 @@ public class PohodaGetOrdersByDateRequest
 
         private string noteField;
 
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/data.xsd")]
         public dataPackDataPackItem dataPackItem
         {
             get => dataPackItemField;
