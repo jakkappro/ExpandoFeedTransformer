@@ -187,21 +187,23 @@ namespace ExpandoFeedTransformer
                     note = "Export objednavok"
                 };
 
+                var res = await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter));
+
                 var existingOrders =
-                    PohodaGetOrdersByDateResponse.Deserialize(
-                            await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter)))
+                    PohodaGetOrdersByDateResponse.Deserialize(res)
                         .responsePackItem.listOrder.order.ToList();
 
                 foreach (var order in expandoOrders.order)
                 {
-                    var exists = existingOrders.Any(existingOrder => existingOrder.orderHeader.numberOrder == order.orderId);
-                    
+                    var exists = existingOrders.Any(existingOrder =>
+                        existingOrder.orderHeader.numberOrder == order.orderId);
+
                     if (exists)
                     {
                         Console.WriteLine("Order {0} already exists", order.orderId);
                         continue;
                     }
-                    
+
                     if (order.orderStatus == "Canceled")
                     {
                         // update order to canceled

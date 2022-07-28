@@ -13,7 +13,7 @@ public class PohodaGetOrdersByDateRequest
     {
         private dataPackDataPackItem dataPackItemField;
 
-        private byte idField;
+        private int idField;
 
         private uint icoField;
 
@@ -30,7 +30,7 @@ public class PohodaGetOrdersByDateRequest
         }
 
         [XmlAttribute]
-        public byte id
+        public int id
         {
             get => idField;
             set => idField = value;
