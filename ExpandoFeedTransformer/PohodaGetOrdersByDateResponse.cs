@@ -22,7 +22,7 @@ public class PohodaGetOrdersByDateResponse
 
         private decimal versionField;
 
-        private byte idField;
+        private decimal idField;
 
         private string stateField;
 
@@ -48,7 +48,7 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlAttribute]
-        public byte id
+        public decimal id
         {
             get => idField;
             set => idField = value;
@@ -573,11 +573,11 @@ public class PohodaGetOrdersByDateResponse
         Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
     public class addressCountry
     {
-        private byte idField;
+        private decimal idField;
 
         private string idsField;
 
-        public byte id
+        public decimal id
         {
             get => idField;
             set => idField = value;
@@ -661,14 +661,14 @@ public class PohodaGetOrdersByDateResponse
         Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderHeaderPaymentType
     {
-        private byte idField;
+        private decimal idField;
 
         private string idsField;
 
         private string paymentTypeField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte id
+        public decimal id
         {
             get => idField;
             set => idField = value;
@@ -695,12 +695,12 @@ public class PohodaGetOrdersByDateResponse
         Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderHeaderPriceLevel
     {
-        private byte idField;
+        private decimal idField;
 
         private string idsField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte id
+        public decimal id
         {
             get => idField;
             set => idField = value;
@@ -752,12 +752,12 @@ public class PohodaGetOrdersByDateResponse
         Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderHeaderCarrier
     {
-        private byte idField;
+        private decimal idField;
 
         private string idsField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte id
+        public decimal id
         {
             get => idField;
             set => idField = value;
@@ -991,11 +991,11 @@ public class PohodaGetOrdersByDateResponse
         IsNullable = false)]
     public class store
     {
-        private byte idField;
+        private decimal idField;
 
         private string idsField;
 
-        public byte id
+        public decimal id
         {
             get => idField;
             set => idField = value;
@@ -1082,23 +1082,23 @@ public class PohodaGetOrdersByDateResponse
     {
         private decimal priceNoneField;
 
-        private byte priceLowField;
+        private decimal priceLowField;
 
-        private byte priceLowVATField;
+        private decimal priceLowVATField;
 
-        private byte priceLowSumField;
+        private decimal priceLowSumField;
 
         private decimal priceHighField;
 
         private decimal priceHighVATField;
 
-        private byte priceHighSumField;
+        private decimal priceHighSumField;
 
-        private byte price3Field;
+        private decimal price3Field;
 
-        private byte price3VATField;
+        private decimal price3VATField;
 
-        private byte price3SumField;
+        private decimal price3SumField;
 
         private round roundField;
 
@@ -1110,21 +1110,21 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte priceLow
+        public decimal priceLow
         {
             get => priceLowField;
             set => priceLowField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte priceLowVAT
+        public decimal priceLowVAT
         {
             get => priceLowVATField;
             set => priceLowVATField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte priceLowSum
+        public decimal priceLowSum
         {
             get => priceLowSumField;
             set => priceLowSumField = value;
@@ -1145,28 +1145,28 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte priceHighSum
+        public decimal priceHighSum
         {
             get => priceHighSumField;
             set => priceHighSumField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte price3
+        public decimal price3
         {
             get => price3Field;
             set => price3Field = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte price3VAT
+        public decimal price3VAT
         {
             get => price3VATField;
             set => price3VATField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public byte price3Sum
+        public decimal price3Sum
         {
             get => price3SumField;
             set => price3SumField = value;
@@ -1188,9 +1188,9 @@ public class PohodaGetOrdersByDateResponse
         IsNullable = false)]
     public class round
     {
-        private byte priceRoundField;
+        private decimal priceRoundField;
 
-        public byte priceRound
+        public decimal priceRound
         {
             get => priceRoundField;
             set => priceRoundField = value;
