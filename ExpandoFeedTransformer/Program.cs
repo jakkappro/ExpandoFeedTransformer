@@ -206,6 +206,7 @@ namespace ExpandoFeedTransformer
                         {
                             ids = "GD"
                         },
+                        payVAT = true,
                     };
 
                     // order item
@@ -228,7 +229,8 @@ namespace ExpandoFeedTransformer
                         typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
                         {
                             ids = "GD"
-                        }
+                        },
+                        payVAT = true,
                     };
 
                     orderDetail.Add(orderItem);
