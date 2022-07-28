@@ -74,7 +74,7 @@ namespace ExpandoFeedTransformer
                 //serialize datapack in utf-8
                 var ns = new XmlSerializerNamespaces();
                 ns.Add("", "http://www.stormware.cz/schema/version_2/data.xsd");
-                var settings = new XmlWriterSettings { Encoding = new UTF8Encoding(false) };
+                var settings = new XmlWriterSettings { Encoding = new UTF8Encoding(true) };
                 var sb = new StringBuilder();
                 using (var writer = XmlWriter.Create(sb, settings))
                 {
