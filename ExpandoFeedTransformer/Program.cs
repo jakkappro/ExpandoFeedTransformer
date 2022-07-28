@@ -214,7 +214,7 @@ namespace ExpandoFeedTransformer
                     {
                         quantity = item.itemQuantity,
                         delivered = 0,
-                        rateVAT = "historyHigh",
+                        rateVAT = "high",
                         stockItem = new PohodaCreateOrder.orderOrderItemStockItem
                         {
                             stockItem = new PohodaCreateOrder.stockItem
