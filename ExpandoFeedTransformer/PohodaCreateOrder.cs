@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace ExpandoFeedTransformer
@@ -69,13 +71,16 @@ namespace ExpandoFeedTransformer
             {
                 var x = new XmlSerializer(data.GetType());
 
-                var memoryStream = new MemoryStream();
-                var writer = new StreamWriter(memoryStream, System.Text.Encoding.UTF8);
-                x.Serialize(writer, data);
-                var s = writer.ToString() ?? throw new InvalidOperationException();
-                writer.Flush();
-                writer.Close();
-                return s;
+                //serialize datapack in utf-8
+                var ns = new XmlSerializerNamespaces();
+                ns.Add("", "http://www.stormware.cz/schema/version_2/data.xsd");
+                var settings = new XmlWriterSettings { Encoding = new UTF8Encoding(false) };
+                var sb = new StringBuilder();
+                using (var writer = XmlWriter.Create(sb, settings))
+                {
+                    x.Serialize(writer, data, ns);
+                }
+                return sb.ToString();
             }
         }
 
