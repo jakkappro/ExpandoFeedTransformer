@@ -145,243 +145,257 @@ namespace ExpandoFeedTransformer
 
             Console.WriteLine("Creating orders");
 
-            foreach (var order in expandoOrders.order)
+            var mailOnlyMode = args.Length > 1 && args[1] == "mail";
+
+            if (mailOnlyMode)
             {
-                if (order.orderStatus == "Canceled")
+                foreach (var order in expandoOrders.order)
                 {
-                    // update order to canceled
-                    Console.WriteLine($"Skipping order {order.orderId} with status {order.orderStatus}.");
-                    continue;
+                    var shopItems = order.items
+                        .Select(item => prehomeArticles.FirstOrDefault(e => e.ITEM_ID == item.itemId))
+                        .Where(article => article != null).ToList();
+                    mail.AddRow(order, shopItems, orderNumber.ToString());
                 }
-
-                var useCheapRow = false;
-                Console.WriteLine($"Trying to create order {order.orderId}.");
-                using var client = new HttpClient();
-
-                var orderDetail = new List<PohodaCreateOrder.orderOrderItem>();
-
-                var shopItems = new List<PrehomeFeed.SHOPSHOPITEM>();
-
-                foreach (var item in order.items)
+            }
+            else
+            {
+                foreach (var order in expandoOrders.order)
                 {
-                    Console.WriteLine($"Trying to get stock EAN: {item.itemId}");
-                    var article = prehomeArticles.FirstOrDefault(e => e.ITEM_ID == item.itemId);
-
-                    if (article == null) 
-                        continue;
-                    
-                    Console.WriteLine($"Found stock in prehome feed: {article.URL}");
-                    shopItems.Add(article);
-                    var request = PohodaGetStockRequestFactory.CreateRequest(item);
-
-                    var response =
-                        PohodaGetStockResponse.Deserialize(
-                            await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
-
-                    if (response.responsePackItem.listStock.stock is null)
+                    if (order.orderStatus == "Canceled")
                     {
-                        Console.WriteLine("Couldn't find stock, creating new one");
-                        var dataPack = await PohodaCreateStockFactory.CreateRequest(article, Path, client);
-                        Console.WriteLine("Sending request");
-                        Console.WriteLine(PohodaCreateStock.dataPack.Serialize(dataPack) + "\n");
-                        await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
+                        // update order to canceled
+                        Console.WriteLine($"Skipping order {order.orderId} with status {order.orderStatus}.");
+                        continue;
+                    }
+
+                    Console.WriteLine($"Trying to create order {order.orderId}.");
+                    using var client = new HttpClient();
+
+                    var orderDetail = new List<PohodaCreateOrder.orderOrderItem>();
+
+                    var shopItems = new List<PrehomeFeed.SHOPSHOPITEM>();
+
+                    foreach (var item in order.items)
+                    {
+                        Console.WriteLine($"Trying to get stock EAN: {item.itemId}");
+                        var article = prehomeArticles.FirstOrDefault(e => e.ITEM_ID == item.itemId);
+
+                        if (article == null)
+                            continue;
+
+                        Console.WriteLine($"Found stock in prehome feed: {article.URL}");
+                        shopItems.Add(article);
+                        var request = PohodaGetStockRequestFactory.CreateRequest(item);
+
+                        var response =
+                            PohodaGetStockResponse.Deserialize(
+                                await mServer.SendRequest(PohodaGetStockRequest.dataPack.Serialize(request)));
+
+                        if (response.responsePackItem.listStock.stock is null)
+                        {
+                            Console.WriteLine("Couldn't find stock, creating new one");
+                            var dataPack = await PohodaCreateStockFactory.CreateRequest(article, Path, client);
+                            Console.WriteLine("Sending request");
+                            Console.WriteLine(PohodaCreateStock.dataPack.Serialize(dataPack) + "\n");
+                            await mServer.SendRequest(PohodaCreateStock.dataPack.Serialize(dataPack));
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Found stock in pohoda SKU: {article.ITEM_ID}");
+                        }
+
+                        // shipping
+                        var orderItem = new PohodaCreateOrder.orderOrderItem
+                        {
+                            text = "Doprava",
+                            quantity = 1,
+                            delivered = 0,
+                            rateVAT = "high",
+                            homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
+                            {
+                                unitPrice = 5.0m,
+                            },
+                            typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
+                            {
+                                ids = "GD"
+                            },
+                            payVAT = true,
+                        };
+
+                        // order item
+                        var orderItem2 = new PohodaCreateOrder.orderOrderItem
+                        {
+                            quantity = item.itemQuantity,
+                            delivered = 0,
+                            rateVAT = "high",
+                            stockItem = new PohodaCreateOrder.orderOrderItemStockItem
+                            {
+                                stockItem = new PohodaCreateOrder.stockItem
+                                {
+                                    EAN = article.EAN
+                                }
+                            },
+                            homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
+                            {
+                                unitPrice = item.itemPrice * SellingPriceCo,
+                            },
+                            typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
+                            {
+                                ids = "GD"
+                            },
+                            payVAT = true,
+                        };
+
+                        orderDetail.Add(orderItem);
+                        orderDetail.Add(orderItem2);
+                    }
+
+                    Console.WriteLine($"Creating order {order.orderId}");
+                    var orderDataPack = new PohodaCreateOrder.dataPack
+                    {
+                        version = 2.0m,
+                        ico = 53870441,
+                        note = "Export",
+                        id = "zas001",
+                        application = "StwTest",
+                        dataPackItem = new PohodaCreateOrder.dataPackDataPackItem
+                        {
+                            id = "zas001",
+                            version = 2.0m,
+                            order = new PohodaCreateOrder.order
+                            {
+                                version = 2.0m,
+                                orderHeader = new PohodaCreateOrder.orderOrderHeader
+                                {
+                                    orderType = "receivedOrder",
+                                    numberOrder = order.orderId,
+                                    date = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
+                                    dateFrom = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
+                                    dateTo = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
+                                    text = $"Amazon objednavka c. {order.orderId}",
+                                    partnerIdentity = new PohodaCreateOrder.orderOrderHeaderPartnerIdentity
+                                    {
+                                        address = new PohodaCreateOrder.address
+                                        {
+                                            name = order.customer.firstname + " " + order.customer.surname,
+                                            city = order.customer.address.city,
+                                            street = order.customer.address.address1,
+                                            zip = order.customer.address.zip,
+                                            country = new PohodaCreateOrder.addressCountry
+                                            {
+                                                ids = order.customer.address.country
+                                            },
+                                            company = order.customer.companyName ?? "",
+                                            dic = "",
+                                            division = "",
+                                            email = order.customer.email,
+                                            mobilPhone = order.customer.phone
+                                        }
+                                    },
+                                    paymentType = new PohodaCreateOrder.orderOrderHeaderPaymentType
+                                    {
+                                        ids = "Plat.kartou"
+                                    },
+                                    priceLevel = new PohodaCreateOrder.orderOrderHeaderPriceLevel
+                                    {
+                                        ids = order.customer.address.country == "DE"
+                                            ? "DE"
+                                            : "Predajná"
+                                    },
+                                    MOSS = new PohodaCreateOrder.orderOrderHeaderMOSS()
+                                    {
+                                        ids = order.customer.address.country == "DE"
+                                            ? "DE"
+                                            : "AT"
+                                    },
+                                    evidentiaryResourcesMOSS =
+                                        new PohodaCreateOrder.orderOrderHeaderEvidentiaryResourcesMOSS()
+                                        {
+                                            ids = "A"
+                                        },
+                                    number = new PohodaCreateOrder.orderOrderHeaderNumber
+                                    {
+                                        numberRequested = orderNumber.ToString()
+                                    },
+                                    isExecuted = false,
+                                    carrier = new PohodaCreateOrder.orderOrderHeaderCarrier
+                                    {
+                                        ids = order.customer.address.country == "DE"
+                                            ? "Doprava DE"
+                                            : "Doprava AT"
+                                    },
+                                    isDelivered = false,
+                                },
+                                orderDetail = orderDetail.ToArray(),
+                                orderSummary = new PohodaCreateOrder.orderOrderSummary
+                                {
+                                    roundingDocument = "none"
+                                }
+                            }
+                        }
+                    };
+
+                    //var fixedAddress = order.customer.address.address1.Replace("ß", "ss");
+
+                    // var packetaOrder = new PacketaCreateOrder.createPacket()
+                    // {
+                    //     apiPassword = apiPassword,
+                    //     packetAttributes = new PacketaCreateOrder.createPacketPacketAttributes
+                    //     {
+                    //         number = orderNumber.ToString(),
+                    //         name = order.customer.firstname,
+                    //         surname = order.customer.surname,
+                    //         email = order.customer.email,
+                    //         addressId = (uint)(order.customer.address.country == "DE" ? 13613 : 80),
+                    //         value = order.totalPrice,
+                    //         eshop = "AzetCool",
+                    //         weight = 0.99m,
+                    //         sender_id = 331585, 
+                    //         phone = order.customer.phone,
+                    //         zip = order.customer.address.zip,
+                    //         street = fixedAddress,
+                    //         houseNumber = string.IsNullOrWhiteSpace(order.customer.address.address2)
+                    //             ? ""
+                    //             : order.customer.address.address2,
+                    //         city = order.customer.address.city,
+                    //         security = new PacketaCreateOrder.createPacketPacketAttributesSecurity()
+                    //         {
+                    //             allowPublicTracking = 1
+                    //         }
+                    //     }
+                    // };
+                    //
+                    //
+                    //
+                    // var l = PacketaCreateOrderResponse.Deserialize(await (await httpClient.PostAsync("",
+                    //         new ByteArrayContent(
+                    //             Encoding.ASCII.GetBytes(PacketaCreateOrder.createPacket.Serialize(packetaOrder))))).Content
+                    //     .ReadAsStringAsync());
+                    //
+                    // if (l.result is not null)
+                    // {
+                    //     Console.WriteLine(l.result);
+                    // }
+
+                    await Task.Delay(1500);
+
+                    await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
+
+                    // this is not necessary anymore it was used to create item that prehome excluded from feed
+                    if (1 == 0)
+                    {
+                        Console.WriteLine("Adding predefined items to mail.");
+                        mail.AddCheapRow(order, shopItems);
                     }
                     else
                     {
-                        Console.WriteLine($"Found stock in pohoda SKU: {article.ITEM_ID}");
+                        shopItems.ForEach(e => Console.WriteLine($"Adding item {e.ITEM_ID} to mail."));
+                        mail.AddRow(order, shopItems, orderNumber.ToString());
                     }
 
-                    // shipping
-                    var orderItem = new PohodaCreateOrder.orderOrderItem
-                    {
-                        text = "Doprava",
-                        quantity = 1,
-                        delivered = 0,
-                        rateVAT = "high",
-                        homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
-                        {
-                            unitPrice = 5.0m,
-                        },
-                        typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
-                        {
-                            ids = "GD"
-                        },
-                        payVAT = true,
-                    };
-
-                    // order item
-                    var orderItem2 = new PohodaCreateOrder.orderOrderItem
-                    {
-                        quantity = item.itemQuantity,
-                        delivered = 0,
-                        rateVAT = "high",
-                        stockItem = new PohodaCreateOrder.orderOrderItemStockItem
-                        {
-                            stockItem = new PohodaCreateOrder.stockItem
-                            {
-                                EAN = article.EAN
-                            }
-                        },
-                        homeCurrency = new PohodaCreateOrder.orderOrderItemHomeCurrency
-                        {
-                            unitPrice = item.itemPrice * SellingPriceCo,
-                        },
-                        typeServiceMOSS = new PohodaCreateOrder.orderOrderItemTypeServiceMOSS()
-                        {
-                            ids = "GD"
-                        },
-                        payVAT = true,
-                    };
-
-                    orderDetail.Add(orderItem);
-                    orderDetail.Add(orderItem2);
+                    orderNumber += 1;
                 }
-
-                Console.WriteLine($"Creating order {order.orderId}");
-                var orderDataPack = new PohodaCreateOrder.dataPack
-                {
-                    version = 2.0m,
-                    ico = 53870441,
-                    note = "Export",
-                    id = "zas001",
-                    application = "StwTest",
-                    dataPackItem = new PohodaCreateOrder.dataPackDataPackItem
-                    {
-                        id = "zas001",
-                        version = 2.0m,
-                        order = new PohodaCreateOrder.order
-                        {
-                            version = 2.0m,
-                            orderHeader = new PohodaCreateOrder.orderOrderHeader
-                            {
-                                orderType = "receivedOrder",
-                                numberOrder = order.orderId,
-                                date = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
-                                dateFrom = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
-                                dateTo = Convert.ToDateTime(order.purchaseDate.Split(" ")[0]),
-                                text = $"Amazon objednavka c. {order.orderId}",
-                                partnerIdentity = new PohodaCreateOrder.orderOrderHeaderPartnerIdentity
-                                {
-                                    address = new PohodaCreateOrder.address
-                                    {
-                                        name = order.customer.firstname + " " + order.customer.surname,
-                                        city = order.customer.address.city,
-                                        street = order.customer.address.address1,
-                                        zip = order.customer.address.zip,
-                                        country = new PohodaCreateOrder.addressCountry
-                                        {
-                                            ids = order.customer.address.country
-                                        },
-                                        company = order.customer.companyName ?? "",
-                                        dic = "",
-                                        division = "",
-                                        email = order.customer.email,
-                                        mobilPhone = order.customer.phone
-                                    }
-                                },
-                                paymentType = new PohodaCreateOrder.orderOrderHeaderPaymentType
-                                {
-                                    ids = "Plat.kartou"
-                                },
-                                priceLevel = new PohodaCreateOrder.orderOrderHeaderPriceLevel
-                                {
-                                    ids = order.customer.address.country == "DE"
-                                        ? "DE"
-                                        : "Predajná"
-                                },
-                                MOSS = new PohodaCreateOrder.orderOrderHeaderMOSS()
-                                {
-                                    ids = order.customer.address.country == "DE"
-                                        ? "DE"
-                                        : "AT"
-                                },
-                                evidentiaryResourcesMOSS =
-                                    new PohodaCreateOrder.orderOrderHeaderEvidentiaryResourcesMOSS()
-                                    {
-                                        ids = "A"
-                                    },
-                                number = new PohodaCreateOrder.orderOrderHeaderNumber
-                                {
-                                    numberRequested = orderNumber.ToString()
-                                },
-                                isExecuted = false,
-                                carrier = new PohodaCreateOrder.orderOrderHeaderCarrier
-                                {
-                                    ids = order.customer.address.country == "DE"
-                                        ? "Doprava DE"
-                                        : "Doprava AT"
-                                },
-                                isDelivered = false,
-                            },
-                            orderDetail = orderDetail.ToArray(),
-                            orderSummary = new PohodaCreateOrder.orderOrderSummary
-                            {
-                                roundingDocument = "none"
-                            }
-                        }
-                    }
-                };
-
-                //var fixedAddress = order.customer.address.address1.Replace("ß", "ss");
-
-                // var packetaOrder = new PacketaCreateOrder.createPacket()
-                // {
-                //     apiPassword = apiPassword,
-                //     packetAttributes = new PacketaCreateOrder.createPacketPacketAttributes
-                //     {
-                //         number = orderNumber.ToString(),
-                //         name = order.customer.firstname,
-                //         surname = order.customer.surname,
-                //         email = order.customer.email,
-                //         addressId = (uint)(order.customer.address.country == "DE" ? 13613 : 80),
-                //         value = order.totalPrice,
-                //         eshop = "AzetCool",
-                //         weight = 0.99m,
-                //         sender_id = 331585, 
-                //         phone = order.customer.phone,
-                //         zip = order.customer.address.zip,
-                //         street = fixedAddress,
-                //         houseNumber = string.IsNullOrWhiteSpace(order.customer.address.address2)
-                //             ? ""
-                //             : order.customer.address.address2,
-                //         city = order.customer.address.city,
-                //         security = new PacketaCreateOrder.createPacketPacketAttributesSecurity()
-                //         {
-                //             allowPublicTracking = 1
-                //         }
-                //     }
-                // };
-                //
-                //
-                //
-                // var l = PacketaCreateOrderResponse.Deserialize(await (await httpClient.PostAsync("",
-                //         new ByteArrayContent(
-                //             Encoding.ASCII.GetBytes(PacketaCreateOrder.createPacket.Serialize(packetaOrder))))).Content
-                //     .ReadAsStringAsync());
-                //
-                // if (l.result is not null)
-                // {
-                //     Console.WriteLine(l.result);
-                // }
-                
-                await Task.Delay(1500);
-
-                await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
-
-                if (useCheapRow)
-                {
-                    Console.WriteLine("Adding predefined items to mail.");
-                    mail.AddCheapRow(order, shopItems);
-                }
-                else
-                {
-                    shopItems.ForEach(e => Console.WriteLine($"Adding item {e.ITEM_ID} to mail."));
-                    mail.AddRow(order, shopItems, orderNumber.ToString());
-                }
-                
-                orderNumber += 1;
             }
-
             // foreach (var p in orderIds.Select(orderId => new PacketaGenerateLabel.packetLabelPdf()
             //          {
             //              apiPassword = apiPassword,
@@ -409,6 +423,9 @@ namespace ExpandoFeedTransformer
             Console.Read();
 
             // mServer.StopServer();
+
+            if (mailOnlyMode)
+                return;
 
             try
             {
