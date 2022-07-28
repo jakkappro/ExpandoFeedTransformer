@@ -169,8 +169,8 @@ namespace ExpandoFeedTransformer
                             {
                                 filter = new PohodaGetOrdersByDateRequest.filter()
                                 {
-                                    dateFrom = (DateTime.Today - TimeSpan.FromDays(days)).ToString("yy-MM-dd"),
-                                    dateTill = DateTime.Now.ToString("yy-MM-dd")
+                                    dateFrom = (DateTime.Today - TimeSpan.FromDays(days)).ToString("yyyy-MM-dd"),
+                                    dateTill = DateTime.Now.ToString("yyyy-MM-dd")
                                 }
                             },
                             version = 2.0m,
