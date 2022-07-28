@@ -141,7 +141,7 @@ public class PohodaGetOrdersByDateResponse
         IsNullable = false)]
     public class listOrder
     {
-        private listOrderOrder[] orderField;
+        private listOrderOrder[]? orderField;
 
         private decimal versionField;
 
@@ -152,7 +152,7 @@ public class PohodaGetOrdersByDateResponse
         private string stateField;
 
         [XmlElement("order")]
-        public listOrderOrder[] order
+        public listOrderOrder[]? order
         {
             get => orderField;
             set => orderField = value;

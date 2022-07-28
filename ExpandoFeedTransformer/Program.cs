@@ -187,16 +187,22 @@ namespace ExpandoFeedTransformer
                     note = "Export objednavok"
                 };
 
-                Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days)).ToString("yy-MM-dd"));
-                Console.WriteLine("To: " + DateTime.Now.ToString("yy-MM-dd"));
+                Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days)).ToString("yyyy-MM-dd"));
+                Console.WriteLine("To: " + DateTime.Now.ToString("yyyy-MM-dd"));
                 
                 var res = await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter));
 
                 var existingOrders =
                     PohodaGetOrdersByDateResponse.Deserialize(res);
 
-                var existingOrdersList = existingOrders.responsePackItem.listOrder.order.ToList();
+                var existingOrdersList = new List<PohodaGetOrdersByDateResponse.listOrderOrder>();
+                
+                if (existingOrders.responsePackItem.listOrder.order is not null)
+                {
+                    existingOrdersList = existingOrders.responsePackItem.listOrder.order.ToList();
 
+                }
+                
                 foreach (var order in expandoOrders.order)
                 {
                     var exists = existingOrdersList.Any(existingOrder =>
