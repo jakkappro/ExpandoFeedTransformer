@@ -138,5 +138,34 @@ namespace ExpandoFeedTransformer.Services
                 Console.WriteLine("Error while sending mail :(");
             }
         }
+
+        public void AddNoPohodaRow(ExpandoFeed.ordersOrder order, List<PrehomeFeed.SHOPSHOPITEM?> items)
+        {
+            _rows += _rowTemplate;
+            _rows = _rows.Replace("[[OrderId]]", order.orderId);
+            _rows = _rows.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
+            _rows = _rows.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
+            _rows = _rows.Replace("[[totalPrice]]", order.totalPrice.ToString(CultureInfo.InvariantCulture));
+            _rows = _rows.Replace("[[companyName]]", order.customer.companyName);
+            _rows = _rows.Replace("[[firstName]]", order.customer.firstname);
+            _rows = _rows.Replace("[[surname]]", order.customer.surname);
+            _rows = _rows.Replace("[[address]]", order.customer.address.address1);
+            _rows = _rows.Replace("[[city]]", order.customer.address.city);
+            _rows = _rows.Replace("[[zip]]", order.customer.address.zip);
+            _rows = _rows.Replace("[[country]]", order.customer.address.country);
+
+            var data = "";
+
+            foreach (var item in items)
+            {
+                var temp = _itemTemplate;
+                temp = temp.Replace("[[ID]]", item.ITEM_ID.ToString());
+                temp = temp.Replace("[[EAN]]", item.EAN);
+                temp = temp.Replace("[[URL]]", item.URL);
+                data += temp;
+            }
+
+            _rows = _rows.Replace("[[items]]", data);  
+        }
     }
 }
