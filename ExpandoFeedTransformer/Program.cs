@@ -187,6 +187,9 @@ namespace ExpandoFeedTransformer
                     note = "Export objednavok"
                 };
 
+                Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days)).ToString("yy-MM-dd"));
+                Console.WriteLine("To: " + DateTime.Now.ToString("yy-MM-dd"));
+                
                 var res = await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter));
 
                 var existingOrders =
