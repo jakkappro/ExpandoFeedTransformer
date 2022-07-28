@@ -71,16 +71,12 @@ namespace ExpandoFeedTransformer
             {
                 var x = new XmlSerializer(data.GetType());
 
-                //serialize datapack in utf-8
-                var ns = new XmlSerializerNamespaces();
-                ns.Add("", "http://www.stormware.cz/schema/version_2/data.xsd");
-                var settings = new XmlWriterSettings { Encoding = new UTF8Encoding(true) };
-                var sb = new StringBuilder();
-                using (var writer = XmlWriter.Create(sb, settings))
-                {
-                    x.Serialize(writer, data, ns);
-                }
-                return sb.ToString();
+                TextWriter writer = new Utf8StringWriter();
+                x.Serialize(writer, data);
+                var s = writer.ToString() ?? throw new InvalidOperationException();
+                writer.Flush();
+                writer.Close();
+                return s;
             }
         }
 
