@@ -309,7 +309,7 @@ namespace ExpandoFeedTransformer
         public class address
         {
 
-            private string companyField;
+            private string? companyField;
 
             private string divisionField;
 
@@ -331,7 +331,7 @@ namespace ExpandoFeedTransformer
 
             private string mobilPhoneField;
 
-            public string company
+            public string? company
             {
                 get => companyField;
                 set => companyField = value;

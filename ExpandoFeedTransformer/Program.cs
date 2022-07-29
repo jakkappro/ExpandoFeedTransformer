@@ -166,7 +166,7 @@ public static class Program
                         {
                             filter = new PohodaGetOrdersByDateRequest.filter
                             {
-                                dateFrom = (DateTime.Today - TimeSpan.FromDays(days)).ToString("yyyy-MM-dd"),
+                                dateFrom = (DateTime.Today - TimeSpan.FromDays(days + 1)).ToString("yyyy-MM-dd"),
                                 dateTill = DateTime.Now.ToString("yyyy-MM-dd")
                             }
                         },
@@ -184,7 +184,7 @@ public static class Program
                 note = "Export objednavok"
             };
 
-            Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days)).ToString("yyyy-MM-dd"));
+            Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days + 1)).ToString("yyyy-MM-dd"));
             Console.WriteLine("To: " + DateTime.Now.ToString("yyyy-MM-dd"));
 
             var res = await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter));
@@ -332,7 +332,7 @@ public static class Program
                                         {
                                             ids = order.customer.address.country
                                         },
-                                        company = order.customer.companyName ?? (order.customer.companyName.Equals("-")
+                                        company = order.customer.companyName ?? (order.customer.companyName is "-"
                                             ? null
                                             : order.customer.companyName),
                                         dic = "",

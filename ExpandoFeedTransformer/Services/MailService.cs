@@ -49,7 +49,9 @@ namespace ExpandoFeedTransformer.Services
             _rows = _rows.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
             _rows = _rows.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
             _rows = _rows.Replace("[[totalPrice]]", order.totalPrice.ToString(CultureInfo.InvariantCulture));
-            _rows = _rows.Replace("[[companyName]]", order.customer.companyName);
+            _rows = _rows.Replace("[[companyName]]", order.customer.companyName ?? (order.customer.companyName is "-"
+                ? null
+                : order.customer.companyName));
             _rows = _rows.Replace("[[firstName]]", order.customer.firstname);
             _rows = _rows.Replace("[[surname]]", order.customer.surname);
             _rows = _rows.Replace("[[address]]", order.customer.address.address1);
@@ -70,7 +72,7 @@ namespace ExpandoFeedTransformer.Services
             }
 
             _rows = _rows.Replace("[[items]]", data);
-        } 
+        }
 
         public void AddCheapRow(ExpandoFeed.ordersOrder order, List<PrehomeFeed.SHOPSHOPITEM> items)
         {
@@ -105,7 +107,7 @@ namespace ExpandoFeedTransformer.Services
             data += t;
 
             _rows = _rows.Replace("[[items]]", data);
-        } 
+        }
 
         public void PopulateTemplate()
         {
@@ -146,7 +148,9 @@ namespace ExpandoFeedTransformer.Services
             _rows = _rows.Replace("[[purchaseDate]]", order.purchaseDate.Split(" ")[0]);
             _rows = _rows.Replace("[[latestShipDate]]", order.latestShipDate.Split(" ")[0]);
             _rows = _rows.Replace("[[totalPrice]]", order.totalPrice.ToString(CultureInfo.InvariantCulture));
-            _rows = _rows.Replace("[[companyName]]", order.customer.companyName);
+            _rows = _rows.Replace("[[companyName]]", order.customer.companyName ?? (order.customer.companyName is "-"
+                ? null
+                : order.customer.companyName));
             _rows = _rows.Replace("[[firstName]]", order.customer.firstname);
             _rows = _rows.Replace("[[surname]]", order.customer.surname);
             _rows = _rows.Replace("[[address]]", order.customer.address.address1);
@@ -165,7 +169,7 @@ namespace ExpandoFeedTransformer.Services
                 data += temp;
             }
 
-            _rows = _rows.Replace("[[items]]", data);  
+            _rows = _rows.Replace("[[items]]", data);
         }
     }
 }
