@@ -70,12 +70,10 @@ namespace ExpandoFeedTransformer
             public static string Serialize(dataPack data)
             {
                 var x = new XmlSerializer(data.GetType());
-
-                TextWriter writer = new Utf8StringWriter();
+                
+                using StringWriter writer = new Utf8StringWriter();
                 x.Serialize(writer, data);
                 var s = writer.ToString() ?? throw new InvalidOperationException();
-                writer.Flush();
-                writer.Close();
                 return s;
             }
         }
