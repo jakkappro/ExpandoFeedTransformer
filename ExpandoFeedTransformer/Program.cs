@@ -492,7 +492,8 @@ public static class Program
         if (response.StatusCode != HttpStatusCode.OK)
             throw new ArgumentException("Couldn't get feed");
 
-        return PrehomeFeed.Deserialize(await response.Content.ReadAsStringAsync()).SHOPITEM.ToList();
+        var readAsStringAsync = Encoding.UTF8.GetString(Encoding.Default.GetBytes(await response.Content.ReadAsStringAsync()));
+        return PrehomeFeed.Deserialize(readAsStringAsync).SHOPITEM.ToList();
     }
 
     private static async Task<ExpandoFeed.orders> GetExpandoOrders(int numberOfDays)

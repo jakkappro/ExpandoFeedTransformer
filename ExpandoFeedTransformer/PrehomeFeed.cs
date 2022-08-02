@@ -9,7 +9,7 @@ namespace ExpandoFeedTransformer
         public static SHOP Deserialize(string source)
         {
             var serializer = new XmlSerializer(typeof(SHOP));
-            using var reader = new StreamReader(source, Encoding.UTF8, true);
+            using var reader = new StringReader(source);
             return (SHOP)serializer.Deserialize(reader);
         }
 
