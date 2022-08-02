@@ -96,8 +96,10 @@ namespace ExpandoFeedTransformer
 
         public async Task<string> SendRequest(string body)
         {
-            httpClient.DefaultRequestHeaders.Add("Content-Encoding", "utf-8");
-            var response =  await httpClient.PostAsync("/xml", new ByteArrayContent(Encoding.ASCII.GetBytes(body)));
+            var message = new HttpRequestMessage(HttpMethod.Post, "/xml");
+            message.Content = new ByteArrayContent(Encoding.ASCII.GetBytes(body));
+            message.Headers.Add("Content-Encoding", "utf-8");
+            var response =  await httpClient.SendAsync(message);
             return await response.Content.ReadAsStringAsync();
         }
 
