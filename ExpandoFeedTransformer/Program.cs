@@ -34,19 +34,6 @@ public static class Program
 
         var orderNumber = ulong.Parse($"3{DateTime.Now:yyMMdd}{line}");
 
-        Console.WriteLine("Starting pohoda mServer");
-        var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
-            "http://127.0.0.1:5336", "admin", "acecom", 1000, 3);
-
-        mServer.StartServer();
-
-        if (!await mServer.IsConnectionAvailable())
-        {
-            Console.WriteLine("Couldn't connect to mServer");
-            return;
-        }
-
-
         Console.WriteLine("Getting expando feed");
 
         var expandoOrders = await GetExpandoOrders(days);
@@ -91,7 +78,8 @@ public static class Program
                                                             <tr>
                                                             <td>itemId</td>
                                                             <td>ean</td>
-                                                            <td>link></td>
+                                                            <td>link</td>
+                                                            <td>dealer</td>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -129,8 +117,8 @@ public static class Program
 
         const string itemTemplate = @"<td>[[ID]]</td>
                                 <td>[[EAN]]</td>
-                                <td><a href=""[[URL]]"">link</a></td>";
-
+                                <td><a href=""[[URL]]"">link</a></td>
+                                <td>[[DEALER]]</td>";
         #endregion
 
         var mail = new MailService("noreply@azetcool.com", "jakkappro@gmail.com", "pojtek@gmail.com",
@@ -156,6 +144,18 @@ public static class Program
         }
         else
         {
+            Console.WriteLine("Starting pohoda mServer");
+            var mServer = new PohodaMServer("test", "\"C:\\Program Files (x86)\\STORMWARE\\POHODA SK E1\"",
+                "http://127.0.0.1:5336", "admin", "acecom", 1000, 3);
+
+            mServer.StartServer();
+
+            if (!await mServer.IsConnectionAvailable())
+            {
+                Console.WriteLine("Couldn't connect to mServer");
+                return;
+            }
+
             var ordersFilter = new PohodaGetOrdersByDateRequest.dataPack
             {
                 dataPackItem = new PohodaGetOrdersByDateRequest.dataPackDataPackItem
@@ -429,13 +429,6 @@ public static class Program
                 await Task.Delay(1500);
 
                 await mServer.SendRequest(PohodaCreateOrder.dataPack.Serialize(orderDataPack));
-
-                // this is not necessary anymore it was used to create item that prehome excluded from feed
-                if (1 == 0)
-                {
-                    Console.WriteLine("Adding predefined items to mail.");
-                    mail.AddCheapRow(order, shopItems);
-                }
 
                 shopItems.ForEach(e => Console.WriteLine($"Adding item {e.ITEM_ID} to mail."));
                 mail.AddRow(order, shopItems, orderNumber.ToString());

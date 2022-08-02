@@ -12,13 +12,6 @@ namespace ExpandoFeedTransformer
             return (SHOP)serializer.Deserialize(reader);
         }
 
-        public static string ParseShopToXML(SHOP shop)
-        {
-            var serializer = new XmlSerializer(typeof(SHOP));
-            using var writer = new StringWriter();
-            serializer.Serialize(writer, shop);
-            return writer.ToString();
-        }
 
         [Serializable]
         [DesignerCategory("code")]
@@ -49,6 +42,8 @@ namespace ExpandoFeedTransformer
 
             private string pRODUCTField;
 
+            private string pRODUCT_CODEField;
+
             private string dESCRIPTIONField;
 
             private string uRLField;
@@ -62,6 +57,8 @@ namespace ExpandoFeedTransformer
             private byte vATField;
 
             private string mANUFACTURERField;
+
+            private string dEALERField;
 
             private string cATEGORYTEXTField;
 
@@ -95,6 +92,12 @@ namespace ExpandoFeedTransformer
             {
                 get => pRODUCTField;
                 set => pRODUCTField = value;
+            }
+
+            public string PRODUCT_CODE
+            {
+                get => pRODUCT_CODEField;
+                set => pRODUCT_CODEField = value;
             }
 
             public string DESCRIPTION
@@ -137,6 +140,12 @@ namespace ExpandoFeedTransformer
             {
                 get => mANUFACTURERField;
                 set => mANUFACTURERField = value;
+            }
+
+            public string DEALER
+            {
+                get => dEALERField;
+                set => dEALERField = value;
             }
 
             public string CATEGORYTEXT
