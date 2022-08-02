@@ -9,7 +9,7 @@ public class PohodaGetOrdersByDateResponse
     public static responsePack Deserialize(string source)
     {
         var serializer = new XmlSerializer(typeof(responsePack));
-        using var reader = new StreamReader(source, Encoding.UTF8, true);
+        using var reader = new StringReader(source);
         return (responsePack)serializer.Deserialize(reader);
     }
     

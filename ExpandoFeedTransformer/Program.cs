@@ -508,7 +508,9 @@ public static class Program
         if (response.StatusCode != HttpStatusCode.OK)
             throw new ArgumentException("Couldn't get feed");
 
-        return ExpandoFeed.Deserialize(await response.Content.ReadAsStringAsync());
+        var readAsStringAsync = Encoding.UTF8.GetString(Encoding.Default.GetBytes(await response.Content.ReadAsStringAsync()));
+        
+        return ExpandoFeed.Deserialize(readAsStringAsync);
     }
 
     private static void AddMissingItems(List<PrehomeFeed.SHOPSHOPITEM> items)
