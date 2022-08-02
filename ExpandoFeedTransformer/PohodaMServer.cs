@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Xml;
 
@@ -98,6 +99,7 @@ namespace ExpandoFeedTransformer
         {
             var message = new HttpRequestMessage(HttpMethod.Post, "/xml");
             message.Content = new ByteArrayContent(Encoding.ASCII.GetBytes(body));
+            message.Content.Headers.ContentType = new MediaTypeHeaderValue("text/xml");
             message.Headers.Add("Content-Encoding", "utf-8");
             var response =  await httpClient.SendAsync(message);
             return await response.Content.ReadAsStringAsync();
