@@ -493,6 +493,8 @@ public static class Program
             throw new ArgumentException("Couldn't get feed");
 
         var readAsStringAsync = Encoding.UTF8.GetString(Encoding.Default.GetBytes(await response.Content.ReadAsStringAsync()));
+        var readAsStringAsync2 = await response.Content.ReadAsStringAsync();
+
         return PrehomeFeed.Deserialize(readAsStringAsync).SHOPITEM.ToList();
     }
 

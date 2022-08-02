@@ -46,6 +46,7 @@ namespace ExpandoFeedTransformer
             httpClient = new HttpClient { BaseAddress = new Uri(serverUrl) };
             httpClient.DefaultRequestHeaders.Add("STW-Authorization", CreateAuthHeader());
             httpClient.DefaultRequestHeaders.Add("Accept", "text/xml");
+            httpClient.DefaultRequestHeaders.Add("Content-Encoding", "utf-8");
 
             var responseCode = HttpStatusCode.BadRequest;
 
