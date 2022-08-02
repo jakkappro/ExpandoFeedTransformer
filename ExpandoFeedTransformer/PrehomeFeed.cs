@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace ExpandoFeedTransformer
@@ -8,7 +9,7 @@ namespace ExpandoFeedTransformer
         public static SHOP Deserialize(string source)
         {
             var serializer = new XmlSerializer(typeof(SHOP));
-            using var reader = new StringReader(source);
+            using var reader = new StreamReader(source, Encoding.UTF8, true);
             return (SHOP)serializer.Deserialize(reader);
         }
 

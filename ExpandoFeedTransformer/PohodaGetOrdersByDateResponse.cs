@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Text;
 using System.Xml.Serialization;
 
 namespace ExpandoFeedTransformer;
@@ -8,7 +9,7 @@ public class PohodaGetOrdersByDateResponse
     public static responsePack Deserialize(string source)
     {
         var serializer = new XmlSerializer(typeof(responsePack));
-        using var reader = new StringReader(source);
+        using var reader = new StreamReader(source, Encoding.UTF8, true);
         return (responsePack)serializer.Deserialize(reader);
     }
     
