@@ -4,6 +4,6 @@ namespace ExpandoFeedTransformer
 {
     public class Utf8StringWriter : StringWriter
     {
-        public override Encoding Encoding => Encoding.UTF8;
+        public override Encoding Encoding => Encoding.GetEncoding(850);
     }
 }

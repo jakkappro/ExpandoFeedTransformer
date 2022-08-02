@@ -17,7 +17,7 @@ public static class Program
 
         //var orderIds = new List<long>();
 
-        if (args.Length == 0 || !int.TryParse(args[0], out var days)) 
+        if (args.Length == 0 || !int.TryParse(args[0], out var days))
             days = 1;
 
         var line = "001";
@@ -119,6 +119,7 @@ public static class Program
                                 <td>[[EAN]]</td>
                                 <td><a href=""[[URL]]"">link</a></td>
                                 <td>[[DEALER]]</td>";
+
         #endregion
 
         var mail = new MailService("noreply@azetcool.com", "jakkappro@gmail.com", "pojtek@gmail.com",
