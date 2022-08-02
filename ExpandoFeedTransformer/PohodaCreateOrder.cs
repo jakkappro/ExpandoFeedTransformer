@@ -71,7 +71,7 @@ namespace ExpandoFeedTransformer
             {
                 var x = new XmlSerializer(data.GetType());
 
-                TextWriter writer = new StringWriter();
+                TextWriter writer = new Utf8StringWriter();
                 x.Serialize(writer, data);
                 var s = writer.ToString() ?? throw new InvalidOperationException();
                 writer.Flush();
