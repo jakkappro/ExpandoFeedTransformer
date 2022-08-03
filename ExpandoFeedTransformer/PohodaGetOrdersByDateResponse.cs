@@ -240,7 +240,7 @@ public class PohodaGetOrdersByDateResponse
         IsNullable = false)]
     public class orderHeader
     {
-        private ushort idField;
+        private ulong idField;
 
         private string orderTypeField;
 
@@ -280,7 +280,7 @@ public class PohodaGetOrdersByDateResponse
 
         private bool markRecordField;
 
-        public ushort id
+        public ulong id
         {
             get => idField;
             set => idField = value;
@@ -465,9 +465,9 @@ public class PohodaGetOrdersByDateResponse
 
         private string zipField;
 
-        private uint icoField;
+        private ulong icoField;
 
-        private uint dicField;
+        private ulong dicField;
 
         private bool dicFieldSpecified;
 
@@ -475,7 +475,7 @@ public class PohodaGetOrdersByDateResponse
 
         private addressCountry countryField;
 
-        private long mobilPhoneField;
+        private string mobilPhoneField;
 
         private bool mobilPhoneFieldSpecified;
 
@@ -517,13 +517,13 @@ public class PohodaGetOrdersByDateResponse
             set => zipField = value;
         }
 
-        public uint ico
+        public ulong ico
         {
             get => icoField;
             set => icoField = value;
         }
 
-        public uint dic
+        public ulong dic
         {
             get => dicField;
             set => dicField = value;
@@ -548,7 +548,7 @@ public class PohodaGetOrdersByDateResponse
             set => countryField = value;
         }
 
-        public long mobilPhone
+        public string mobilPhone
         {
             get => mobilPhoneField;
             set => mobilPhoneField = value;
@@ -778,7 +778,7 @@ public class PohodaGetOrdersByDateResponse
         Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderDetailOrderItem
     {
-        private ushort idField;
+        private ulong idField;
 
         private string textField;
 
@@ -800,7 +800,7 @@ public class PohodaGetOrdersByDateResponse
 
         private orderDetailOrderItemTypeServiceMOSS typeServiceMOSSField;
 
-        private ulong codeField;
+        private string codeField;
 
         private bool codeFieldSpecified;
 
@@ -808,7 +808,7 @@ public class PohodaGetOrdersByDateResponse
 
         private bool pDPField;
 
-        public ushort id
+        public ulong id
         {
             get => idField;
             set => idField = value;
@@ -874,7 +874,7 @@ public class PohodaGetOrdersByDateResponse
             set => typeServiceMOSSField = value;
         }
 
-        public ulong code
+        public string code
         {
             get => codeField;
             set => codeField = value;

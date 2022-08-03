@@ -13,6 +13,13 @@ public static class Program
 
     private static async Task Main(string[] args)
     {
+        /*var res = await File.ReadAllTextAsync("C:\\response.xml");
+
+        var existingOrders =
+            PohodaGetOrdersByDateResponse.Deserialize(res);
+
+        var existingOrdersList = new List<PohodaGetOrdersByDateResponse.listOrderOrder>();*/
+
         var apiPassword = "2d20b17664867cd0fe1dc38c0195ac36";
         var httpClient = new HttpClient { BaseAddress = new Uri("https://www.zasilkovna.cz/api/rest/") };
 
