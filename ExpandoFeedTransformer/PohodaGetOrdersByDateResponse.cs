@@ -29,7 +29,7 @@ public class PohodaGetOrdersByDateResponse
 
         private string programVersionField;
 
-        private uint icoField;
+        private ulong icoField;
 
         private string keyField;
 
@@ -70,7 +70,7 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlAttribute]
-        public uint ico
+        public ulong ico
         {
             get => icoField;
             set => icoField = value;
@@ -410,10 +410,10 @@ public class PohodaGetOrdersByDateResponse
         Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderHeaderNumber
     {
-        private uint numberRequestedField;
+        private ulong numberRequestedField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public uint numberRequested
+        public ulong numberRequested
         {
             get => numberRequestedField;
             set => numberRequestedField = value;
@@ -800,7 +800,7 @@ public class PohodaGetOrdersByDateResponse
 
         private orderDetailOrderItemTypeServiceMOSS typeServiceMOSSField;
 
-        private uint codeField;
+        private ulong codeField;
 
         private bool codeFieldSpecified;
 
@@ -874,7 +874,7 @@ public class PohodaGetOrdersByDateResponse
             set => typeServiceMOSSField = value;
         }
 
-        public uint code
+        public ulong code
         {
             get => codeField;
             set => codeField = value;
@@ -1017,19 +1017,19 @@ public class PohodaGetOrdersByDateResponse
         IsNullable = false)]
     public class stockItem
     {
-        private ushort idField;
+        private ulong idField;
 
-        private uint idsField;
+        private string idsField;
 
         private ulong eANField;
 
-        public ushort id
+        public ulong id
         {
             get => idField;
             set => idField = value;
         }
 
-        public uint ids
+        public string ids
         {
             get => idsField;
             set => idsField = value;

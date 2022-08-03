@@ -9,6 +9,7 @@ public static class Program
 {
     private const string Path = "\\\\AzetCool-Pohoda\\POHODA_SK_E1_DATA\\Dokumenty\\ACecom\\Obrázky\\";
     public const decimal SellingPriceCo = 1.25m;
+    public const int dayFromSearch = 10;
 
     private static async Task Main(string[] args)
     {
@@ -167,7 +168,7 @@ public static class Program
                         {
                             filter = new PohodaGetOrdersByDateRequest.filter
                             {
-                                dateFrom = (DateTime.Today - TimeSpan.FromDays(days + 1)).ToString("yyyy-MM-dd"),
+                                dateFrom = (DateTime.Today - TimeSpan.FromDays(days + dayFromSearch)).ToString("yyyy-MM-dd"),
                                 dateTill = DateTime.Now.ToString("yyyy-MM-dd")
                             }
                         },
@@ -185,7 +186,7 @@ public static class Program
                 note = "Export objednavok"
             };
 
-            Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days + 1)).ToString("yyyy-MM-dd"));
+            Console.WriteLine("From: " + (DateTime.Today - TimeSpan.FromDays(days + dayFromSearch)).ToString("yyyy-MM-dd"));
             Console.WriteLine("To: " + DateTime.Now.ToString("yyyy-MM-dd"));
 
             var res = await mServer.SendRequest(PohodaGetOrdersByDateRequest.dataPack.Serialize(ordersFilter));
@@ -526,6 +527,18 @@ public static class Program
                     EAN = "6941057417837",
                     IMGURL = "",
                     PRICE_VAT = 15.47m * SellingPriceCo,
+                    VAT = 20
+                });
+
+        if (!items.Exists(i => i.ITEM_ID == 261245))
+            items.Add(
+                new PrehomeFeed.SHOPSHOPITEM
+                {
+                    ITEM_ID = 261245,
+                    PRODUCTNAME = "Kvetináč Strend Pro Woodeff, 41,5x29x19cm, whiskey barel wagon",
+                    EAN = "8584163031795",
+                    IMGURL = "",
+                    PRICE_VAT = 36.60m,
                     VAT = 20
                 });
     }
