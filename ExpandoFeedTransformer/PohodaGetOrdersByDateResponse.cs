@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Text;
 using System.Xml.Serialization;
 
 namespace ExpandoFeedTransformer;
@@ -12,7 +11,7 @@ public class PohodaGetOrdersByDateResponse
         using var reader = new StringReader(source);
         return (responsePack)serializer.Deserialize(reader);
     }
-    
+
     [Serializable]
     [DesignerCategory("code")]
     [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/response.xsd")]
@@ -23,13 +22,13 @@ public class PohodaGetOrdersByDateResponse
 
         private decimal versionField;
 
-        private decimal idField;
+        private byte idField;
 
         private string stateField;
 
         private string programVersionField;
 
-        private ulong icoField;
+        private uint icoField;
 
         private string keyField;
 
@@ -49,7 +48,7 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlAttribute]
-        public decimal id
+        public byte id
         {
             get => idField;
             set => idField = value;
@@ -70,7 +69,7 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlAttribute]
-        public ulong ico
+        public uint ico
         {
             get => icoField;
             set => icoField = value;
@@ -93,8 +92,7 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/response.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/response.xsd")]
     public class responsePackResponsePackItem
     {
         private listOrder listOrderField;
@@ -136,13 +134,11 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/list.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/list.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/list.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/list.xsd", IsNullable = false)]
     public class listOrder
     {
-        private listOrderOrder[]? orderField;
+        private listOrderOrder[] orderField;
 
         private decimal versionField;
 
@@ -153,7 +149,7 @@ public class PohodaGetOrdersByDateResponse
         private string stateField;
 
         [XmlElement("order")]
-        public listOrderOrder[]? order
+        public listOrderOrder[] order
         {
             get => orderField;
             set => orderField = value;
@@ -190,8 +186,7 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/list.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/list.xsd")]
     public class listOrderOrder
     {
         private orderHeader orderHeaderField;
@@ -199,6 +194,8 @@ public class PohodaGetOrdersByDateResponse
         private orderDetailOrderItem[] orderDetailField;
 
         private orderSummary orderSummaryField;
+
+        private linkedDocuments linkedDocumentsField;
 
         private decimal versionField;
 
@@ -224,6 +221,13 @@ public class PohodaGetOrdersByDateResponse
             set => orderSummaryField = value;
         }
 
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+        public linkedDocuments linkedDocuments
+        {
+            get => linkedDocumentsField;
+            set => linkedDocumentsField = value;
+        }
+
         [XmlAttribute]
         public decimal version
         {
@@ -234,201 +238,112 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd", IsNullable = false)]
     public class orderHeader
     {
-        private ushort idField;
+        private object[] itemsField;
 
-        private string orderTypeField;
+        private ItemsChoiceType[] itemsElementNameField;
 
-        private orderHeaderNumber numberField;
+        [XmlElement("MOSS", typeof(orderHeaderMOSS))]
+        [XmlElement("carrier", typeof(orderHeaderCarrier))]
+        [XmlElement("date", typeof(DateTime), DataType = "date")]
+        [XmlElement("dateFrom", typeof(DateTime), DataType = "date")]
+        [XmlElement("dateTo", typeof(DateTime), DataType = "date")]
+        [XmlElement("evidentiaryResourcesMOSS", typeof(orderHeaderEvidentiaryResourcesMOSS))]
+        [XmlElement("histRate", typeof(bool))]
+        [XmlElement("id", typeof(byte))]
+        [XmlElement("isDelivered", typeof(bool))]
+        [XmlElement("isExecuted", typeof(bool))]
+        [XmlElement("isReserved", typeof(bool))]
+        [XmlElement("markRecord", typeof(bool))]
+        [XmlElement("myIdentity", typeof(orderHeaderMyIdentity))]
+        [XmlElement("note", typeof(string))]
+        [XmlElement("number", typeof(orderHeaderNumber))]
+        [XmlElement("numberOrder", typeof(string))]
+        [XmlElement("orderType", typeof(string))]
+        [XmlElement("parameters", typeof(orderHeaderParameters))]
+        [XmlElement("partnerIdentity", typeof(orderHeaderPartnerIdentity))]
+        [XmlElement("paymentType", typeof(orderHeaderPaymentType))]
+        [XmlElement("permanentDocument", typeof(bool))]
+        [XmlElement("text", typeof(string))]
+        [XmlChoiceIdentifier("ItemsElementName")]
+        public object[] Items
+        {
+            get => itemsField;
+            set => itemsField = value;
+        }
 
-        private string numberOrderField;
+        [XmlElement("ItemsElementName")]
+        [XmlIgnore]
+        public ItemsChoiceType[] ItemsElementName
+        {
+            get => itemsElementNameField;
+            set => itemsElementNameField = value;
+        }
+    }
 
-        private DateTime dateField;
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderMOSS
+    {
+        private string idsField;
 
-        private DateTime dateFromField;
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public string ids
+        {
+            get => idsField;
+            set => idsField = value;
+        }
+    }
 
-        private DateTime dateToField;
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderCarrier
+    {
+        private byte idField;
 
-        private string textField;
+        private string idsField;
 
-        private orderHeaderPartnerIdentity partnerIdentityField;
-
-        private orderHeaderMyIdentity myIdentityField;
-
-        private orderHeaderPaymentType paymentTypeField;
-
-        private orderHeaderPriceLevel priceLevelField;
-
-        private bool isExecutedField;
-
-        private bool isDeliveredField;
-
-        private bool isReservedField;
-
-        private orderHeaderMOSS mOSSField;
-
-        private orderHeaderEvidentiaryResourcesMOSS evidentiaryResourcesMOSSField;
-
-        private orderHeaderCarrier carrierField;
-
-        private bool permanentDocumentField;
-
-        private bool markRecordField;
-
-        public ushort id
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public byte id
         {
             get => idField;
             set => idField = value;
         }
 
-        public string orderType
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public string ids
         {
-            get => orderTypeField;
-            set => orderTypeField = value;
-        }
-
-        public orderHeaderNumber number
-        {
-            get => numberField;
-            set => numberField = value;
-        }
-
-        public string numberOrder
-        {
-            get => numberOrderField;
-            set => numberOrderField = value;
-        }
-
-        [XmlElement(DataType = "date")]
-        public DateTime date
-        {
-            get => dateField;
-            set => dateField = value;
-        }
-
-        [XmlElement(DataType = "date")]
-        public DateTime dateFrom
-        {
-            get => dateFromField;
-            set => dateFromField = value;
-        }
-
-        [XmlElement(DataType = "date")]
-        public DateTime dateTo
-        {
-            get => dateToField;
-            set => dateToField = value;
-        }
-
-        public string text
-        {
-            get => textField;
-            set => textField = value;
-        }
-
-        public orderHeaderPartnerIdentity partnerIdentity
-        {
-            get => partnerIdentityField;
-            set => partnerIdentityField = value;
-        }
-
-        public orderHeaderMyIdentity myIdentity
-        {
-            get => myIdentityField;
-            set => myIdentityField = value;
-        }
-
-        public orderHeaderPaymentType paymentType
-        {
-            get => paymentTypeField;
-            set => paymentTypeField = value;
-        }
-
-        public orderHeaderPriceLevel priceLevel
-        {
-            get => priceLevelField;
-            set => priceLevelField = value;
-        }
-
-        public bool isExecuted
-        {
-            get => isExecutedField;
-            set => isExecutedField = value;
-        }
-
-        public bool isDelivered
-        {
-            get => isDeliveredField;
-            set => isDeliveredField = value;
-        }
-
-        public bool isReserved
-        {
-            get => isReservedField;
-            set => isReservedField = value;
-        }
-
-        public orderHeaderMOSS MOSS
-        {
-            get => mOSSField;
-            set => mOSSField = value;
-        }
-
-        public orderHeaderEvidentiaryResourcesMOSS evidentiaryResourcesMOSS
-        {
-            get => evidentiaryResourcesMOSSField;
-            set => evidentiaryResourcesMOSSField = value;
-        }
-
-        public orderHeaderCarrier carrier
-        {
-            get => carrierField;
-            set => carrierField = value;
-        }
-
-        public bool permanentDocument
-        {
-            get => permanentDocumentField;
-            set => permanentDocumentField = value;
-        }
-
-        public bool markRecord
-        {
-            get => markRecordField;
-            set => markRecordField = value;
+            get => idsField;
+            set => idsField = value;
         }
     }
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderNumber
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderEvidentiaryResourcesMOSS
     {
-        private ulong numberRequestedField;
+        private string idsField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public ulong numberRequested
+        public string ids
         {
-            get => numberRequestedField;
-            set => numberRequestedField = value;
+            get => idsField;
+            set => idsField = value;
         }
     }
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderPartnerIdentity
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderMyIdentity
     {
         private address addressField;
-
-        private shipToAddress shipToAddressField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
         public address address
@@ -436,21 +351,12 @@ public class PohodaGetOrdersByDateResponse
             get => addressField;
             set => addressField = value;
         }
-
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public shipToAddress shipToAddress
-        {
-            get => shipToAddressField;
-            set => shipToAddressField = value;
-        }
     }
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
     public class address
     {
         private string companyField;
@@ -467,6 +373,8 @@ public class PohodaGetOrdersByDateResponse
 
         private uint icoField;
 
+        private bool icoFieldSpecified;
+
         private uint dicField;
 
         private bool dicFieldSpecified;
@@ -475,9 +383,11 @@ public class PohodaGetOrdersByDateResponse
 
         private addressCountry countryField;
 
-        private long mobilPhoneField;
+        private string mobilPhoneField;
 
-        private bool mobilPhoneFieldSpecified;
+        private long phoneField;
+
+        private bool phoneFieldSpecified;
 
         private string emailField;
 
@@ -523,6 +433,13 @@ public class PohodaGetOrdersByDateResponse
             set => icoField = value;
         }
 
+        [XmlIgnore]
+        public bool icoSpecified
+        {
+            get => icoFieldSpecified;
+            set => icoFieldSpecified = value;
+        }
+
         public uint dic
         {
             get => dicField;
@@ -548,17 +465,23 @@ public class PohodaGetOrdersByDateResponse
             set => countryField = value;
         }
 
-        public long mobilPhone
+        public string mobilPhone
         {
             get => mobilPhoneField;
             set => mobilPhoneField = value;
         }
 
-        [XmlIgnore]
-        public bool mobilPhoneSpecified
+        public long phone
         {
-            get => mobilPhoneFieldSpecified;
-            set => mobilPhoneFieldSpecified = value;
+            get => phoneField;
+            set => phoneField = value;
+        }
+
+        [XmlIgnore]
+        public bool phoneSpecified
+        {
+            get => phoneFieldSpecified;
+            set => phoneFieldSpecified = value;
         }
 
         public string email
@@ -570,15 +493,14 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
     public class addressCountry
     {
-        private decimal idField;
+        private byte idField;
 
         private string idsField;
 
-        public decimal id
+        public byte id
         {
             get => idField;
             set => idField = value;
@@ -593,47 +515,181 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd",
-        IsNullable = false)]
-    public class shipToAddress
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderNumber
     {
-        private object companyField;
+        private uint numberRequestedField;
 
-        private object nameField;
-
-        private object cityField;
-
-        private object streetField;
-
-        private object emailField;
-
-        public object company
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public uint numberRequested
         {
-            get => companyField;
-            set => companyField = value;
+            get => numberRequestedField;
+            set => numberRequestedField = value;
         }
+    }
 
-        public object name
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderParameters
+    {
+        private parameter[] parameterField;
+
+        [XmlElement("parameter", Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public parameter[] parameter
+        {
+            get => parameterField;
+            set => parameterField = value;
+        }
+    }
+
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
+    public class parameter
+    {
+        private string nameField;
+
+        private string textValueField;
+
+        private DateTime datetimeValueField;
+
+        private bool datetimeValueFieldSpecified;
+
+        private bool booleanValueField;
+
+        private bool booleanValueFieldSpecified;
+
+        public string name
         {
             get => nameField;
             set => nameField = value;
         }
 
-        public object city
+        public string textValue
+        {
+            get => textValueField;
+            set => textValueField = value;
+        }
+
+        [XmlElement(DataType = "date")]
+        public DateTime datetimeValue
+        {
+            get => datetimeValueField;
+            set => datetimeValueField = value;
+        }
+
+        [XmlIgnore]
+        public bool datetimeValueSpecified
+        {
+            get => datetimeValueFieldSpecified;
+            set => datetimeValueFieldSpecified = value;
+        }
+
+        public bool booleanValue
+        {
+            get => booleanValueField;
+            set => booleanValueField = value;
+        }
+
+        [XmlIgnore]
+        public bool booleanValueSpecified
+        {
+            get => booleanValueFieldSpecified;
+            set => booleanValueFieldSpecified = value;
+        }
+    }
+
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    public class orderHeaderPartnerIdentity
+    {
+        private address addressField;
+
+        private shipToAddress shipToAddressField;
+
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public address address
+        {
+            get => addressField;
+            set => addressField = value;
+        }
+
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public shipToAddress shipToAddress
+        {
+            get => shipToAddressField;
+            set => shipToAddressField = value;
+        }
+    }
+
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
+    public class shipToAddress
+    {
+        private string companyField;
+
+        private string nameField;
+
+        private string cityField;
+
+        private string streetField;
+
+        private string zipField;
+
+        private shipToAddressCountry countryField;
+
+        private uint phoneField;
+
+        private string emailField;
+
+        public string company
+        {
+            get => companyField;
+            set => companyField = value;
+        }
+
+        public string name
+        {
+            get => nameField;
+            set => nameField = value;
+        }
+
+        public string city
         {
             get => cityField;
             set => cityField = value;
         }
 
-        public object street
+        public string street
         {
             get => streetField;
             set => streetField = value;
         }
 
-        public object email
+        public string zip
+        {
+            get => zipField;
+            set => zipField = value;
+        }
+
+        public shipToAddressCountry country
+        {
+            get => countryField;
+            set => countryField = value;
+        }
+
+        public uint phone
+        {
+            get => phoneField;
+            set => phoneField = value;
+        }
+
+        public string email
         {
             get => emailField;
             set => emailField = value;
@@ -642,34 +698,39 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderMyIdentity
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    public class shipToAddressCountry
     {
-        private address addressField;
+        private byte idField;
 
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public address address
+        private string idsField;
+
+        public byte id
         {
-            get => addressField;
-            set => addressField = value;
+            get => idField;
+            set => idField = value;
+        }
+
+        public string ids
+        {
+            get => idsField;
+            set => idsField = value;
         }
     }
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderHeaderPaymentType
     {
-        private decimal idField;
+        private byte idField;
 
         private string idsField;
 
         private string paymentTypeField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal id
+        public byte id
         {
             get => idField;
             set => idField = value;
@@ -691,91 +752,57 @@ public class PohodaGetOrdersByDateResponse
     }
 
     [Serializable]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderPriceLevel
+    [XmlType(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd", IncludeInSchema = false)]
+    public enum ItemsChoiceType
     {
-        private decimal idField;
+        MOSS,
 
-        private string idsField;
+        carrier,
 
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal id
-        {
-            get => idField;
-            set => idField = value;
-        }
+        date,
 
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public string ids
-        {
-            get => idsField;
-            set => idsField = value;
-        }
+        dateFrom,
+
+        dateTo,
+
+        evidentiaryResourcesMOSS,
+
+        histRate,
+
+        id,
+
+        isDelivered,
+
+        isExecuted,
+
+        isReserved,
+
+        markRecord,
+
+        myIdentity,
+
+        note,
+
+        number,
+
+        numberOrder,
+
+        orderType,
+
+        parameters,
+
+        partnerIdentity,
+
+        paymentType,
+
+        permanentDocument,
+
+        text,
     }
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderMOSS
-    {
-        private string idsField;
-
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public string ids
-        {
-            get => idsField;
-            set => idsField = value;
-        }
-    }
-
-    [Serializable]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderEvidentiaryResourcesMOSS
-    {
-        private string idsField;
-
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public string ids
-        {
-            get => idsField;
-            set => idsField = value;
-        }
-    }
-
-    [Serializable]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    public class orderHeaderCarrier
-    {
-        private decimal idField;
-
-        private string idsField;
-
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal id
-        {
-            get => idField;
-            set => idField = value;
-        }
-
-        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public string ids
-        {
-            get => idsField;
-            set => idsField = value;
-        }
-    }
-
-    [Serializable]
-    [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderDetailOrderItem
     {
         private ushort idField;
@@ -794,15 +821,19 @@ public class PohodaGetOrdersByDateResponse
 
         private string rateVATField;
 
+        private decimal percentVATField;
+
+        private bool percentVATFieldSpecified;
+
         private decimal discountPercentageField;
 
         private orderDetailOrderItemHomeCurrency homeCurrencyField;
 
+        private string noteField;
+
         private orderDetailOrderItemTypeServiceMOSS typeServiceMOSSField;
 
-        private ulong codeField;
-
-        private bool codeFieldSpecified;
+        private string codeField;
 
         private orderDetailOrderItemStockItem stockItemField;
 
@@ -856,6 +887,19 @@ public class PohodaGetOrdersByDateResponse
             set => rateVATField = value;
         }
 
+        public decimal percentVAT
+        {
+            get => percentVATField;
+            set => percentVATField = value;
+        }
+
+        [XmlIgnore]
+        public bool percentVATSpecified
+        {
+            get => percentVATFieldSpecified;
+            set => percentVATFieldSpecified = value;
+        }
+
         public decimal discountPercentage
         {
             get => discountPercentageField;
@@ -868,23 +912,22 @@ public class PohodaGetOrdersByDateResponse
             set => homeCurrencyField = value;
         }
 
+        public string note
+        {
+            get => noteField;
+            set => noteField = value;
+        }
+
         public orderDetailOrderItemTypeServiceMOSS typeServiceMOSS
         {
             get => typeServiceMOSSField;
             set => typeServiceMOSSField = value;
         }
 
-        public ulong code
+        public string code
         {
             get => codeField;
             set => codeField = value;
-        }
-
-        [XmlIgnore]
-        public bool codeSpecified
-        {
-            get => codeFieldSpecified;
-            set => codeFieldSpecified = value;
         }
 
         public orderDetailOrderItemStockItem stockItem
@@ -902,8 +945,7 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderDetailOrderItemHomeCurrency
     {
         private decimal unitPriceField;
@@ -945,8 +987,7 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderDetailOrderItemTypeServiceMOSS
     {
         private string idsField;
@@ -961,8 +1002,7 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderDetailOrderItemStockItem
     {
         private store storeField;
@@ -986,17 +1026,15 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
     public class store
     {
-        private decimal idField;
+        private byte idField;
 
         private string idsField;
 
-        public decimal id
+        public byte id
         {
             get => idField;
             set => idField = value;
@@ -1011,19 +1049,19 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
     public class stockItem
     {
-        private ulong idField;
+        private ushort idField;
 
         private string idsField;
 
         private ulong eANField;
 
-        public ulong id
+        private bool eANFieldSpecified;
+
+        public ushort id
         {
             get => idField;
             set => idField = value;
@@ -1040,19 +1078,28 @@ public class PohodaGetOrdersByDateResponse
             get => eANField;
             set => eANField = value;
         }
+
+        [XmlIgnore]
+        public bool EANSpecified
+        {
+            get => eANFieldSpecified;
+            set => eANFieldSpecified = value;
+        }
     }
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd", IsNullable = false)]
     public class orderSummary
     {
         private string roundingDocumentField;
 
         private string roundingVATField;
+
+        private bool calculateVATField;
+
+        private bool calculateVATFieldSpecified;
 
         private orderSummaryHomeCurrency homeCurrencyField;
 
@@ -1068,6 +1115,19 @@ public class PohodaGetOrdersByDateResponse
             set => roundingVATField = value;
         }
 
+        public bool calculateVAT
+        {
+            get => calculateVATField;
+            set => calculateVATField = value;
+        }
+
+        [XmlIgnore]
+        public bool calculateVATSpecified
+        {
+            get => calculateVATFieldSpecified;
+            set => calculateVATFieldSpecified = value;
+        }
+
         public orderSummaryHomeCurrency homeCurrency
         {
             get => homeCurrencyField;
@@ -1077,17 +1137,16 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
     public class orderSummaryHomeCurrency
     {
-        private decimal priceNoneField;
+        private byte priceNoneField;
 
-        private decimal priceLowField;
+        private byte priceLowField;
 
-        private decimal priceLowVATField;
+        private byte priceLowVATField;
 
-        private decimal priceLowSumField;
+        private byte priceLowSumField;
 
         private decimal priceHighField;
 
@@ -1095,37 +1154,37 @@ public class PohodaGetOrdersByDateResponse
 
         private decimal priceHighSumField;
 
-        private decimal price3Field;
+        private byte price3Field;
 
-        private decimal price3VATField;
+        private byte price3VATField;
 
-        private decimal price3SumField;
+        private byte price3SumField;
 
         private round roundField;
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal priceNone
+        public byte priceNone
         {
             get => priceNoneField;
             set => priceNoneField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal priceLow
+        public byte priceLow
         {
             get => priceLowField;
             set => priceLowField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal priceLowVAT
+        public byte priceLowVAT
         {
             get => priceLowVATField;
             set => priceLowVATField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal priceLowSum
+        public byte priceLowSum
         {
             get => priceLowSumField;
             set => priceLowSumField = value;
@@ -1153,21 +1212,21 @@ public class PohodaGetOrdersByDateResponse
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal price3
+        public byte price3
         {
             get => price3Field;
             set => price3Field = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal price3VAT
+        public byte price3VAT
         {
             get => price3VATField;
             set => price3VATField = value;
         }
 
         [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-        public decimal price3Sum
+        public byte price3Sum
         {
             get => price3SumField;
             set => price3SumField = value;
@@ -1183,10 +1242,8 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
     public class round
     {
         private decimal priceRoundField;
@@ -1200,10 +1257,69 @@ public class PohodaGetOrdersByDateResponse
 
     [Serializable]
     [DesignerCategory("code")]
-    [XmlType(AnonymousType = true,
-        Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
-    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd",
-        IsNullable = false)]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd", IsNullable = false)]
+    public class linkedDocuments
+    {
+        private link linkField;
+
+        [XmlElement(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+        public link link
+        {
+            get => linkField;
+            set => linkField = value;
+        }
+    }
+
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/type.xsd", IsNullable = false)]
+    public class link
+    {
+        private string sourceAgendaField;
+
+        private linkSourceDocument sourceDocumentField;
+
+        public string sourceAgenda
+        {
+            get => sourceAgendaField;
+            set => sourceAgendaField = value;
+        }
+
+        public linkSourceDocument sourceDocument
+        {
+            get => sourceDocumentField;
+            set => sourceDocumentField = value;
+        }
+    }
+
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/type.xsd")]
+    public class linkSourceDocument
+    {
+        private byte idField;
+
+        private uint numberField;
+
+        public byte id
+        {
+            get => idField;
+            set => idField = value;
+        }
+
+        public uint number
+        {
+            get => numberField;
+            set => numberField = value;
+        }
+    }
+
+    [Serializable]
+    [DesignerCategory("code")]
+    [XmlType(AnonymousType = true, Namespace = "http://www.stormware.cz/schema/version_2/order.xsd")]
+    [XmlRoot(Namespace = "http://www.stormware.cz/schema/version_2/order.xsd", IsNullable = false)]
     public class orderDetail
     {
         private orderDetailOrderItem[] orderItemField;
